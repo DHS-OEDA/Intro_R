@@ -1,9 +1,15 @@
 ---
 title: "1.0 Basic Navigation, and Data Structures"
-author: "Emilie Henderson and Aaron Cochrane"
+author: "Emilie Henderson and Aaron Cochran"
 date: "February 8, 2018"
 output: html_document
 ---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+require(tidyverse) # dependency for document
+```
 
 # Basic R Navigation
 ## Getting help.
@@ -12,6 +18,8 @@ If you know what function you want, but  don't know how to use it, the help func
 
 ```{r}
 help(help)
+
+# shortcut is ?help
 ```
 
 
@@ -19,10 +27,12 @@ If you don't quite know the name of the function you want, help.search uses keyw
 
 ```{r}
 help.search("help")
+
+# shortcut is ??help
 ```
 
 
-When you don't know enough to ask for help via R's help, just go to Google.  Discussion boards, blogs and help files online are abundant!
+When you don't know enough to ask for help via R's help, just go to Google.  Discussion boards, blogs and help files online are abundant! Stackoverflow is a great resource. 
 
 The folks at CRAN (The Comprehensive R Archive Network) also maintain 'task views' that are useful road-maps to help you figure out what R packages are useful for a particular task, or field.
 
@@ -38,12 +48,13 @@ You can find your current working directory with `getwd()`.
 getwd()
 ```
 
-Note: R thinks like Unix.  use "\\" or "/", rather than "\" for filepaths.  Unless you're a native UNIX speaker, this quirk probably will trip you up at some point in time.
+Note: R thinks like Unix.  use "\\\\" or "/", rather than "\\" for filepaths.  Unless you're a native UNIX speaker, this quirk probably will trip you up at some point in time.
 
 You can set your current working directory to help keep your files organized. 
 
 ```{r}
-setwd("D:/Presentations/Workshops/GIS In Action") 
+# setwd("D:/Presentations/Workshops/GIS In Action") 
+# note: This assumes you have a drive called "D" and a folder at that path. If you don't, this code chunk will fail. I commented out the code to allow it to run for me. - Aaron
 ```
 
 You can view the objects in your current workspace, the files in your current working directory, or the files present in other folders on your computer. 
@@ -57,12 +68,12 @@ list.files("C:/temp")
 ## Data Structures in Base-R.
 Basic R stores data and information in four major object types: vectors, matrices, data frames and lists.
 
-The R package-set 'TidyVerse' extends these basic structures (more soon).
+The R package-set `tidyverse` is "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The textbook by the main author of the packages, Hadley Wickham, is available online here <http://r4ds.had.co.nz/>, or through O'Reilly Publishing in paper form. 
 
 ### Vectors
 Vectors can old a single number or character, or a sequence of numbers or characters.  They are essentially a 1-dimensional structure for holding information.  All pieces of information within a single vector are of the same data type.  In other words, a single vector will contain either only integers, or all characters.  Numbers that stored in a character vector work like characters.
 
-Vectors are created by using the 'c()' function.
+Vectors are created by using the 'c()' function. 
 
 ```{r}
 ##### numeric vector creation
@@ -86,6 +97,7 @@ print(myvector[c(1,3,5)])
 ```
 
 ### Matrices
+
 Matrices are a lot like vectors, but in two dimensions.  They contain rows, and columns, and data that are all of one type. 
 
 ```{r}
@@ -93,12 +105,15 @@ myvector<-c(1,2,3,4,5,6,7,8,9)
 mymatrix<-matrix(myvector, byrow = T, nrow = 3)
 print(mymatrix)
 ```
+
 Matrix subsets can also be accessed by providing indices within square brackets, just like vectors, but with two dimensions rather than one (rows come first).
+
 ```{r}
 print(mymatrix[1:2,2:3])
 ```
 
 ### Data Frames, with a digression to address Factor vectors
+
 Data frames, like matrices, are also 2-dimensional data structures.  Unlike matrices, they can hold data of different types (characters and numbers) in separate columns.
 
 
@@ -108,6 +123,8 @@ print(mydataframe)
 ```
 
 R, by default, stores the character column as a factor ('fctr'). This is a third type of data that we have not yet introduced.  Factors store text, or 'string' data as numbers, which you cannot see when the data are printed to the console. Yes, this is confusing.  It is, however, space efficient for storage.  In order to save space, when R detects text in a data frame, it generates an integer index for each unique text string, and then uses that integer to point to the appropriate text to print.
+
+>> In the `tidyverse` packages, some changes have been made to how R determines what is or isn't a factor. Traditionally, you have to specify `stringsAsFactors=FALSE` when reading in data if you want to tell R to treat characters as characters and not as factors. `tidyverse` has changed the default behavior to never read in character vectors as factors, and instead allow the user to determine when something should be a factor by using `as.factor()` or `factor()`. 
 
 ```{r}
 mydataframe<-data.frame(colors = c("red","red","green","blue"), pets =c("cat","dog","bird","dog"))
@@ -129,7 +146,18 @@ For the 'colors' factor vector, the number three points to the color 'red'.  For
 
 While there are many good things about factors, odds are good that these invisible numbers will trip you up at least once in your R programming career.  Consider yourself warned.
 
+>> It's a good practice to coerce the column of your data.frame to a character vector and then only deal with factors when and if you choose to. Many regression models will convert characters to factors automatically, but ordering of the factors is something you may need to do manually to ensure they are ordered logically. 
+
+```{r}
+# converting from factor to character using as.character()
+class(mydataframe$colors)
+
+mydataframe$colors <- as.character(mydataframe$colors)
+class(mydataframe$colors)
+```
+
 ### Lists
+
 Back on the topic of data structure. The third base-R structure for holding data is a 'list' object.  This structure is basically a container structure for holding other things.  The list can contain single data points, vectors, matrices, and data frames together, all in one object.  This can be handy for keeping yourself organized, and also handy if you wish to create a function that returns a bunch of different things.
 
 ```{r}
@@ -151,10 +179,21 @@ mylist$one
 cat("\n")
 mylist[["two"]]
 ```
-## Data Structures in TidyVerse (keep this for later?)
+## Data Structures in Tidyverse
+
+```{r}
+# I can build this section out a bit more. Most data structures are the same but how they are evaluated by R changes under tidyverse. - Aaron. 
+```
+
 
 ## Manipulating data
 ### in Base-R
   ##### useful true-false vectors.
   
-### in TidyVerse -- Does this fit within this subsection?
+### in Tidyverse
+
+This is done using the `dplyr` and `tidyr` packages in the `tidyverse` collection. 
+```{r}
+# I can write this section - Aaron
+```
+
