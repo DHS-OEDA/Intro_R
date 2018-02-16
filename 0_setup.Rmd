@@ -87,6 +87,13 @@ File >> New Project... >> Select location
 ![](img/newproj3.png)
 
 
-
-
 All of my projects have a similar structure once inside of the project directory. 
+
+1. Item `1` shows the path to your project folder. 
+2. Folders
+  +  `data` folder for the raw data. 
+  + `img` folder when I save plots as images, or need images in a presentation.
+  + `scripts` for any scripts I use. 
+  
+  
+![](img/projectfolder1.png)

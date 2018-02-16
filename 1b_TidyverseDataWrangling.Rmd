@@ -1,0 +1,115 @@
+---
+title: "1b_TidyverseDataWrangling"
+author: "Aaron C Cochran & Emilie Henderson"
+date: "February 13, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Tidyverse Data Manipulation
+
+This section of the workshop will cover the specific features related to data manipulation using the `tidyverse` collection of packages. It isn't intended to replace Base R but offers a complimentary skillset that is being widely used in the R universe as `tidyverse` has been written over the past few years. 
+
+# The pipeline operator
+
+` %>% ` is known as the pipeline operator. `x %>% y` is functionally equivalent to `f(y(x))`: `y(x)` serves as the input to `f()`, and `x` is the input for `y()`. It says "take the object on the left side of the pipeline and do the thing on the right side of the pipeline to that object."
+
+# `dplyr` verbs
+
+* `filter` - Keeps data based on filtered criteria.
+* `select` - Selects columns of the data.frame
+* `arrange` - 
+* `mutate` - Create new variables from other columns
+* `summarise` - Aggregate and create summary variables like `mean`, `sd` and counts. 
+* `group_by` - Define groups based on variables, then call `summarise` to aggregate over groups. 
+
+`dplyr` also introduces functions that will be recognizable to anyone working with SQL. 
+
+* `left_join` - return all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.
+* `anti_join` - return all rows from x where there are not matching values in y, keeping just columns from x.
+* `semi_join` - return all rows from x where there are matching values in y, keeping just columns from x.
+
+```{r}
+?dplyr::left_join
+```
+
+## In practice
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+
+
+data(flights)
+flights
+
+
+```
+
+### `filter` rows
+
+base R method for comparison
+
+```{r, eval=FALSE}
+flights[flights$month==4, ]
+```
+
+
+
+
+```{r}
+flights %>% filter(month  == 4) %>% head(10)# select April flights only, return first 10
+```
+
+```{r}
+flights %>% filter(month == 4 & day == 23) %>% head(10) # combined filter of month and day, return first 10
+```
+
+```{r}
+flights %>% filter(month == 4 & day == 23 | month == 4 & day == 24) # filtering all flights on April 23 or 24th. 
+
+flights %>% filter(month == 4 & day ==23:24) # much less verbose
+
+flights %>% filter(month == 4 & day == c(1, 4, 6) & carrier == "UA" & arr_time <= 913) # use c() when you need to not use sequential numbers
+```
+
+
+### `select` columns
+
+```{r}
+flights %>% filter(month == 4 & day == 1 & carrier == "UA") %>% select(-year, -month, -day, -carrier) # use - for "not"
+```
+
+### `arrange` rows
+
+```{r}
+# base R method
+
+flights[order(flights$dep_delay), c("carrier", "dep_delay")]
+```
+
+```{r}
+flights %>%
+  select(carrier, dep_delay) %>%
+  arrange(dep_delay)
+```
+
+### `mutate`: creating new variables
+
+Let's approximate speed in mph using $speed = \dfrac{dist}{time}$ 
+
+```{r}
+# base R approach
+flights$speed <- flights$distance / flights$air_time*60
+flights[, c("distance", "air_time", "speed")]
+```
+
+
+```{r}
+flights %>%  mutate(speed = distance/air_time*60) %>% select(distance, air_time, speed)
+```
+
+
