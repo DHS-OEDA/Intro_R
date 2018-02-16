@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
 # Data visualization in R and tidyverse
@@ -36,5 +37,39 @@ ggplot(data = flights, aes(x=month)) +
 ```{r}
 # better, cleaned up version
 ggplot(flights, aes(factor(month))) + geom_bar() + ggtitle('NY Flights by Month, 2013') + xlab('Month') + ylab('Count') + theme_minimal()
+```
+
+### `fill` and `color` 
+
+```{r}
+p1 <- ggplot(flights, aes(factor(month))) 
+
+p1 + geom_bar(aes(fill=carrier))
+
+```
+
+```{r}
+ggplot(flights) + geom_point(aes(x=dep_delay, y=arr_delay, color=carrier))
+```
+
+### Using `dplyr` to arrange data before plotting
+
+The `carrier` field in our flights data uses carrier codes to identify each carrier. What if we wanted the actual names for the carriers so we could make a publication-quality plot?
+
+```{r}
+data(airlines)
+airlines
+
+data(flights)
+flights
+```
+
+```{r}
+flights %>% select(carrier, dep_delay, arr_delay) %>% left_join(airlines, by="carrier") %>% filter(carrier == c("AA","UA", "DL")) %>% 
+  ggplot() + geom_point(aes(x=dep_delay, y=arr_delay, color=name), alpha=.5) +
+  ggtitle('Arrival and departure delays, by Airline') +
+  xlab('Departure delay, minutes') + 
+  ylab('Arrival delay, minutes') +
+  theme_minimal()
 ```
 
