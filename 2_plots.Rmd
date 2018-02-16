@@ -23,6 +23,17 @@ library(tidyverse)
 
 In the `tidyverse` collection there is a package called `ggplot2`. It provides a "grammar of graphics" approach to plotting, where you create plots layer by layer and arrange the plots as you see fit. 
 
+
+
+```{r, eval=FALSE}
+
+ggplot(data = MYDATA, aes(X=MY_X, Y=MY_Y, color=MY_COLOR)) +
+  geom_()  # Many types of geom in ggplot2. 
+# If you use the development version, you can even do simple features (spatial)
+
+```
+
+
 ```{r}
 library(ggplot2)
 library(nycflights13)
@@ -71,5 +82,49 @@ flights %>% select(carrier, dep_delay, arr_delay) %>% left_join(airlines, by="ca
   xlab('Departure delay, minutes') + 
   ylab('Arrival delay, minutes') +
   theme_minimal()
+```
+
+### Faceting
+
+```{r, fig.width = 8, fig.height = 6}
+flights %>% select(carrier, dep_delay, arr_delay, origin) %>% left_join(airlines, by="carrier") %>% filter(carrier == c("AA","UA", "DL")) %>% 
+  ggplot() + geom_point(aes(x=dep_delay, y=arr_delay, color=name), alpha=.5) +
+  ggtitle('Arrival and departure delays, by Airline') +
+  xlab('Departure delay, minutes') + 
+  ylab('Arrival delay, minutes') +
+  theme_minimal() +
+  facet_wrap(~origin)
+```
+
+### More complex `ggplot2` graphs
+
+
+Let's use `mtcars` which is a collection of stats on various makes and models of car. 
+```{r}
+data(mtcars)
+mtcars
+```
+
+Simple plot of `hp` and `mpg`, with the `cyl` (cylinders) color-coded. Smoothing function added.
+```{r}
+ggplot(mtcars) + geom_point(aes(hp, mpg, color = factor(cyl))) + # cyl is numeric in this dataset, 
+  # but really is categorical rather than continuous
+  # so we'll coerce it to be a factor with factor(cyl)
+  xlab('Horsepower') +
+  ylab('MPG') +
+  geom_smooth(aes(hp, mpg), method = "loess") +
+  theme_minimal()
+```
+
+Smoothing, but using a grouping variable (`cyl`). 
+
+```{r}
+
+ggplot(mtcars, aes(x=hp, y=mpg, color=factor(cyl))) +
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  theme_minimal()
+
+
 ```
 
