@@ -1,0 +1,40 @@
+---
+title: "Data visualization"
+author: "Aaron C Cochran & Emilie Henderson"
+date: "February 16, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data visualization in R and tidyverse
+
+## base R way
+
+```{r}
+# I don't know much about base R plotting, so if you want this section please take it
+```
+
+
+## `ggplot2`
+
+In the `tidyverse` collection there is a package called `ggplot2`. It provides a "grammar of graphics" approach to plotting, where you create plots layer by layer and arrange the plots as you see fit. 
+
+```{r}
+library(ggplot2)
+library(nycflights13)
+
+data(flights)
+
+ggplot(data = flights, aes(x=month)) +
+  geom_bar()
+
+```
+
+```{r}
+# better, cleaned up version
+ggplot(flights, aes(factor(month))) + geom_bar() + ggtitle('NY Flights by Month, 2013') + xlab('Month') + ylab('Count') + theme_minimal()
+```
+
