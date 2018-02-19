@@ -100,3 +100,19 @@ z5_2 <- sim(z5_2)
 z5_2 <- plot(z5_2)
 ```
 
+
+### `Zelig` the `tidyverse` way
+
+`zelig` works with `tidyverse` nicely as well. We can incorporate `zelig()` models into our workflow unlike the base R models. 
+
+
+```{r}
+swiss %>% 
+    zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = ., 
+          cite = FALSE) %>%
+    setx(Agriculture = seq(1, 90, by = 5)) %>%
+    sim() %>% 
+    plot()x
+```
+
+
