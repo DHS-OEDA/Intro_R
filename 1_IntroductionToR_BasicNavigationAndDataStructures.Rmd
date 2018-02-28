@@ -190,10 +190,5 @@ mylist[["two"]]
 ### in Base-R
   ##### useful true-false vectors.
   
-### in Tidyverse
 
-This is done using the `dplyr` and `tidyr` packages in the `tidyverse` collection. 
-```{r}
-# I can write this section - Aaron
-```
 

@@ -2,7 +2,9 @@
 title: "1b_TidyverseDataWrangling"
 author: "Aaron C Cochran & Emilie Henderson"
 date: "February 13, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -41,12 +43,8 @@ This section of the workshop will cover the specific features related to data ma
 ```{r}
 library(nycflights13)
 library(tidyverse)
-
-
 data(flights)
 flights
-
-
 ```
 
 ### `filter` rows
@@ -111,5 +109,43 @@ flights[, c("distance", "air_time", "speed")]
 ```{r}
 flights %>%  mutate(speed = distance/air_time*60) %>% select(distance, air_time, speed)
 ```
+
+
+# `summarise` 
+
+> Note: UK or US English spellings are acceptable. 
+
+`summarise` (or `summerize`) 
+
+```{r}
+# summary stats in tidy format
+flights %>% 
+  mutate(speed = distance/air_time*60) %>% 
+  select(distance, air_time, speed) %>% 
+  summarise(avg_speed = mean(speed))
+
+
+# why is there an NA for average speed?  (hint: type mean(c(1, 2, NA))
+flights %>%  
+  mutate(speed = distance/air_time*60) %>% 
+  select(distance, air_time, speed) %>% 
+  summarise(avg_speed = mean(speed, na.rm=TRUE))
+
+```
+
+For functions like `mean` we need to include `na.rm=TRUE` to specify that all missing values (`NA`) are removed before the function calculates the result. 
+
+
+Other aggregate functions:
+
+* `min(x)` - min value of `x`
+* `max(x)` - max value of `x`
+* `mean(x)` - mean value of `x`
+* `median(x)` - median value of `x`
+* `quantile(x, p)` - `p`th quantile of vector `x`
+* `sd(x)` - standard deviation of vector `x`
+* `var(x)` - variance of vector `x`
+* `IQR(x)` - Inter Quartile Range (IQR) of vector `x`
+* `diff(range(x))` - total range of the vector `x`
 
 
