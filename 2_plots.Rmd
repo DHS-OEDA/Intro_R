@@ -3,13 +3,14 @@ title: "Data visualization"
 author: "Aaron C Cochran & Emilie Henderson"
 date: "February 16, 2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 library(tidyverse)
+library(plotly)
 ```
 
 # Data visualization in R and tidyverse
@@ -127,6 +128,75 @@ ggplot(mtcars, aes(x=hp, y=mpg, color=factor(cyl))) +
   geom_smooth(method=lm) + 
   theme_minimal()
 
+```
+
+
+# Interactive plots
+
+There are a lot of choices here, each with advantages and disadvantages. But for brevity, we're going to just look at Plotly.js, built on D3.js. The reason I choose this one is primarily due to the connection with `ggplot2`, and the fact that the R Library is free and open-source. 
+
+## `ggplotly` 
+
+```{r, fig.width = 8, fig.height = 8}
+library(plotly)
+p1 <- ggplot(mtcars, aes(x=hp, y=mpg, color=factor(cyl))) +
+  geom_point() + 
+  geom_smooth(method=lm) + theme_minimal()
+
+ggplotly(p1)
+```
+
+## Types of plots
+
+### Sankey diagrams
+
+```{r}
+library(plotly)
+library(rjson)
+
+json_file <- "https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy.json"
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+p <- plot_ly(
+    type = "sankey",
+    domain = c(
+      x =  c(0,1),
+      y =  c(0,1)
+    ),
+    orientation = "h",
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+
+    node = list(
+      label = json_data$data[[1]]$node$label,
+      color = json_data$data[[1]]$node$color,
+      pad = 15,
+      thickness = 15,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = json_data$data[[1]]$link$source,
+      target = json_data$data[[1]]$link$target,
+      value =  json_data$data[[1]]$link$value,
+      label =  json_data$data[[1]]$link$label
+    )
+  ) %>% 
+  layout(
+    title = "Energy forecast for 2050<br>Source: Department of Energy & Climate Change, Tom Counsell via <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock</a>",
+    font = list(
+      size = 10
+    ),
+    height = 850, 
+    width = 800,
+    xaxis = list(showgrid = F, zeroline = F),
+    yaxis = list(showgrid = F, zeroline = F)
+)
+
+p
 
 
 ```
