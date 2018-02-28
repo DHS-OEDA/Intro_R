@@ -2,7 +2,9 @@
 title: "Data visualization"
 author: "Aaron C Cochran & Emilie Henderson"
 date: "February 16, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -60,7 +62,7 @@ p1 + geom_bar(aes(fill=carrier))
 ```
 
 ```{r}
-ggplot(flights) + geom_point(aes(x=dep_delay, y=arr_delay, color=carrier))
+ggplot(filter(flights, carrier == c('AA', 'DL', 'UA'))) + geom_point(aes(x=dep_delay, y=arr_delay, color=carrier))
 ```
 
 ### Using `dplyr` to arrange data before plotting
