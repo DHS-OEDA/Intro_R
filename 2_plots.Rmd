@@ -15,11 +15,82 @@ library(plotly)
 
 # Data visualization in R and tidyverse
 
-## base R way
+## Base R Plots
+
+While I don't use these typically, it's worth knowing about how base R handles plots. 
+
+### Histograms
 
 ```{r}
-# I don't know much about base R plotting, so if you want this section please take it
+data(mtcars)
+
+hist(mtcars$hp,
+     breaks = 50,
+     xlab = "Horsepower (hp)", 
+     main = "Histogram of car horsepower, 1974 Motor Trend Car Road Tests",
+     ylim = c(0,10))
 ```
+
+### Points and Linear Models
+
+```{r}
+plot(mtcars$mpg ~ mtcars$hp,
+     type = "p",  # point = p, also "o", "l", "b"
+     col = "red", 
+     lwd = 2, # line weight (or point weight)
+     xlab = "MPG",
+     ylab = "HP", 
+     main = "HP vs MPG, 1974 Motor Trend Car Road Tests")
+abline(lm(mpg~hp, data=mtcars), lty = "dashed") # abline(a = intercept, b=slope)
+
+# add in some annotations
+text(x = 250, y=25, labels = "Adj R2 = 0.589\nP=1.788e-7" )
+```
+
+```{r}
+data(iris)
+
+plot(iris$Sepal.Length, iris$Petal.Length,        # x variable, y variable
+     col = iris$Species,                          # colour by species
+     pch = 16,                                    # type of point to use
+     cex = 2,                                     # size of point to use
+     xlab = "Sepal Length",                       # x axis label
+     ylab = "Petal Length",                       # y axis label
+     main = "Flower Characteristics in Iris")     # plot title
+
+legend (x = 4.5, y = 7, legend = levels(iris$Species), col = c(1:3), pch = 16)
+```
+
+#### Saving plots in base R
+
+This isn't the most straightforward (`ggplot2` does it better). 
+
+```{r}
+
+png("Sepal vs Petal Length in Iris.png", width = 500, height = 500, res = 72)
+
+plot(iris$Sepal.Length, iris$Petal.Length,
+     col = iris$Species,
+     main = "Sepal vs Petal Length in Iris")
+
+dev.off()
+```
+
+Or to a pdf
+
+```{r}
+pdf("Sepal vs Petal Length in Iris.pdf")
+
+plot(iris$Sepal.Length, iris$Petal.Length,
+     col = iris$Species,
+     main = "Sepal vs Petal Length in Iris")
+
+dev.off()
+```
+
+## Summary
+
+Base R has a powerful plotting engine, but using it can be convoluted. It also doesn't produce publication quality graphs easily. It is probably best for some quick and dirty exploratory charts, and you may see it included in certain packages, but `ggplot2` does most everything better. 
 
 
 ## `ggplot2`

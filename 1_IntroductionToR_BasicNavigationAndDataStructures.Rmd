@@ -124,7 +124,7 @@ print(mydataframe)
 
 R, by default, stores the character column as a factor ('fctr'). This is a third type of data that we have not yet introduced.  Factors store text, or 'string' data as numbers, which you cannot see when the data are printed to the console. Yes, this is confusing.  It is, however, space efficient for storage.  In order to save space, when R detects text in a data frame, it generates an integer index for each unique text string, and then uses that integer to point to the appropriate text to print.
 
->> In the `tidyverse` packages, some changes have been made to how R determines what is or isn't a factor. Traditionally, you have to specify `stringsAsFactors=FALSE` when reading in data if you want to tell R to treat characters as characters and not as factors. `tidyverse` has changed the default behavior to never read in character vectors as factors, and instead allow the user to determine when something should be a factor by using `as.factor()` or `factor()`. 
+> In the `tidyverse` packages, some changes have been made to how R determines what is or isn't a factor. Traditionally, you have to specify `stringsAsFactors=FALSE` when reading in data if you want to tell R to treat characters as characters and not as factors. `tidyverse` has changed the default behavior to never read in character vectors as factors, and instead allow the user to determine when something should be a factor by using `as.factor()` or `factor()`. 
 
 ```{r}
 mydataframe<-data.frame(colors = c("red","red","green","blue"), pets =c("cat","dog","bird","dog"))
@@ -178,11 +178,6 @@ names(mylist)<-c("one","two","three")
 mylist$one
 cat("\n")
 mylist[["two"]]
-```
-## Data Structures in Tidyverse
-
-```{r}
-# I can build this section out a bit more. Most data structures are the same but how they are evaluated by R changes under tidyverse. - Aaron. 
 ```
 
 
