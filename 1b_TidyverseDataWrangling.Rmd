@@ -47,7 +47,7 @@ This section of the workshop will cover the specific features related to data ma
 
 # The pipeline operator
 
-` %>% ` is known as the pipeline operator. `x %>% y` is functionally equivalent to `f(y(x))`: `y(x)` serves as the input to `f()`, and `x` is the input for `y()`. It says "take the object on the left side of the pipeline and do the thing on the right side of the pipeline to that object."
+` %>% ` is known as the pipeline operator. `x %>% f(y)` is functionally equivalent to `f(x,y  )`: `y(x)` serves as the input to `f()`, and `x` is the input for `y()`. It says "take the object on the left side of the pipeline and do the thing on the right side of the pipeline to that object."
 
 # `dplyr` verbs
 
