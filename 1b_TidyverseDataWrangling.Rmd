@@ -11,6 +11,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning=FALSE)
 ```
 
+# Overview
+
+* `tibble` - the _lazy_ and _surly_ `data.frame`
+* `dplyr` - data manipulation with verbs
+
+
 # Data structures in `tidyverse`
 
 ## `tbl` instead of `data.frame`
@@ -177,5 +183,12 @@ Other aggregate functions:
 * `var(x)` - variance of vector `x`
 * `IQR(x)` - Inter Quartile Range (IQR) of vector `x`
 * `diff(range(x))` - total range of the vector `x`
+
+
+
+
+
+
+
 
 

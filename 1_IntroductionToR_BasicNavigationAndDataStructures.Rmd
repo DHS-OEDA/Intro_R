@@ -146,7 +146,7 @@ For the 'colors' factor vector, the number three points to the color 'red'.  For
 
 While there are many good things about factors, odds are good that these invisible numbers will trip you up at least once in your R programming career.  Consider yourself warned.
 
->> It's a good practice to coerce the column of your data.frame to a character vector and then only deal with factors when and if you choose to. Many regression models will convert characters to factors automatically, but ordering of the factors is something you may need to do manually to ensure they are ordered logically. 
+> It's a good practice to coerce the column of your data.frame to a character vector and then only deal with factors when and if you choose to. Many regression models will convert characters to factors automatically, but ordering of the factors is something you may need to do manually to ensure they are ordered logically. 
 
 ```{r}
 # converting from factor to character using as.character()
