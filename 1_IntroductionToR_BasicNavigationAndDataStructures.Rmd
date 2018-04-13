@@ -18,17 +18,18 @@ If you know what function you want, but  don't know how to use it, the help func
 
 ```{r}
 help(help)
+```
 
-# shortcut is ?help
+There's also a shortcut, just '?'
+```{r}
+?help
 ```
 
 
-If you don't quite know the name of the function you want, help.search uses keywords and fuzzy matching to give you a list of possibilities. 
+If you don't quite know the name of the function you want, help.search, or just '??' use keywords and fuzzy matching to give you a list of possibilities. 
 
 ```{r}
-help.search("help")
-
-# shortcut is ??help
+??help
 ```
 
 
@@ -39,9 +40,7 @@ The folks at CRAN (The Comprehensive R Archive Network) also maintain 'task view
 Because R is constantly under development, new packages come online all the time.  It's well worth checking in.  Here is a link to the 'spatial' task view: https://cran.r-project.org/web/views/Spatial.html.
 
 
-
 ## Navigating around the filing system.
-
 You can find your current working directory with `getwd()`.
 
 ```{r}
@@ -65,12 +64,14 @@ list.files()
 list.files("C:/temp")
 ```
 
-## Data Structures in Base-R.
+## Data Structures: Base-R and tidyverse
 Basic R stores data and information in four major object types: vectors, matrices, data frames and lists.
 
 The R package-set `tidyverse` is "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The textbook by the main author of the packages, Hadley Wickham, is available online here <http://r4ds.had.co.nz/>, or through O'Reilly Publishing in paper form. 
 
-### Vectors
+### Base-R
+
+#### Vectors
 Vectors can old a single number or character, or a sequence of numbers or characters.  They are essentially a 1-dimensional structure for holding information.  All pieces of information within a single vector are of the same data type.  In other words, a single vector will contain either only integers, or all characters.  Numbers that stored in a character vector work like characters.
 
 Vectors are created by using the 'c()' function. 
@@ -96,7 +97,7 @@ print(myvector[3:5])
 print(myvector[c(1,3,5)])   
 ```
 
-### Matrices
+#### Matrices
 
 Matrices are a lot like vectors, but in two dimensions.  They contain rows, and columns, and data that are all of one type. 
 
@@ -112,7 +113,7 @@ Matrix subsets can also be accessed by providing indices within square brackets,
 print(mymatrix[1:2,2:3])
 ```
 
-### Data Frames, with a digression to address Factor vectors
+#### Data Frames, with a digression to address Factor vectors
 
 Data frames, like matrices, are also 2-dimensional data structures.  Unlike matrices, they can hold data of different types (characters and numbers) in separate columns.
 
@@ -156,7 +157,7 @@ mydataframe$colors <- as.character(mydataframe$colors)
 class(mydataframe$colors)
 ```
 
-### Lists
+#### Lists
 
 Back on the topic of data structure. The third base-R structure for holding data is a 'list' object.  This structure is basically a container structure for holding other things.  The list can contain single data points, vectors, matrices, and data frames together, all in one object.  This can be handy for keeping yourself organized, and also handy if you wish to create a function that returns a bunch of different things.
 
@@ -176,14 +177,6 @@ Or, if there are names assigned to the element of the list, they can be accessed
 ```{r}
 names(mylist)<-c("one","two","three")
 mylist$one
-cat("\n")
 mylist[["two"]]
 ```
-
-
-## Manipulating data
-### in Base-R
-  ##### useful true-false vectors.
-  
-
 
