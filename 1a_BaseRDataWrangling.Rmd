@@ -7,25 +7,26 @@ output: html_document
 
 Although tidyverse is a wonderful framework for data management, and is important to learn, you will likely encounter code written by dinosaurs, like Emilie, who learned to code in R before the existence of tidyverse.
 
-This segment is aimed at giving you some tools that may come in handy for understanding code written by other people.  This type of coding is also useful for simple data-management problems.
+This segment is aimed at giving you some tools that may come in handy for understanding code written by other people.  This type of coding is also useful for many simple data-management/manipulation problems.
   
 ## Data summaries - Part 1 -- rows and columns
-### apply for row/column summaries
+### 'apply' function for row/column summaries
 Sometimes, you will want to summarize data over the rows and columns in a matrix, or data frame.  R's 'apply' function is built for this purpose. 
+
+For example, to extract the average of each row in a matrix, you can use the apply function, specifying the first dimension.
+
 ```{r}
 mymatrix<-matrix(c(1,1,1,2,2,2,3,4,5),nrow = 3, byrow = T)
 mymatrix
-```
-
-For example, to extract the average of each row in a matrix, you can use the apply function, specifying the first dimension.
-```{r}
 apply(mymatrix,1,mean)
 ```
+
 
 To extract the average of each column, simply specify the second dimension.
 ```{r}
 apply(mymatrix,2,mean)
 ```
+
 
 It is easy to create different summaries by changing out the function specified in the third argument to the function call.
 
@@ -33,50 +34,46 @@ It is easy to create different summaries by changing out the function specified 
 apply(mymatrix,2,sum)
 ```
 
+
 It is also possible to use a function that returns multiple values.
 ```{r}
 apply(mymatrix,2,summary)
 ```
 
-## Data subsetting
-Sometimes, you will not want to perform a summary over all of your data.  In this case, you can subset objects with vectors.  These vectors. 
 
-In the introductory script, we illustrated how to subset a matrix with numbers indicating which rows and columns to choose.
+## Data subsetting
+Sometimes, you will not want to perform a summary over all of your data.  In this case, you can subset objects with vectors.  In the introductory script, we illustrated how to subset a matrix with numbers indicating which rows and columns to choose.
 
 ```{r}
 mymatrix[c(1,3),c(1,2)]
 ```
 
-We can subset with other types of information as well. True/false 
+We can subset with other types of information as well.  
+
 ### Subsetting with true and false vectors
+
 #### Boolean commands: a quick intro.
 Boolean commands in R are useful for creating true/false vectors to use in subsetting. 
 
-First, we'll start off with two simple vectors of numbers.
-```{r}
-x<-1:11
-y<-11:1
-x
-y
-```
-
 We can use basic boolean notation to apply logical conditions to our vectors. Here are a few simple examples with ==, !=, >, >=, and %in%. 
 ```{r}
-x == y
-x != y
-x > 2
-x >= y
-x %in% y
+x<-1:5
+y<-5:1
+x == y # x equals y
+x != y # x is not equal to y
+x > 2 # x is greater than 2
+x >= y # x is greater than or equal to y
+x %in% y # values in x are contained in y
 ```
 
-Boolean statements can be combined too.
+Boolean statements can be combined.
 ```{r}
-(x >= y) & (x != y)
-(x >= y) | (x != y)
+(x >= y) & (x != y) # x is greater than or equal to y AND x is not equal to y
+(x >= y) | (x != y) # x is greater than or equal to y OR x is not equal to y
 ```
 
 #### functions that return boolean results
-The two functions 'is.na', and 'is.null' are both useful in some circumstances, especially when filtering data sets to show only observations with no missing values.
+The two functions `is.na`, and `is.null` are both useful in some circumstances, especially when filtering data sets to show only observations with no missing values.
 ```{r}
 z<-c(NA,1,2,3)
 is.na(z)
@@ -87,9 +84,9 @@ p<-NULL
 is.null(p)
 ```
 
-The 'any', and 'all' functions are also quite handy.
+The `any`, and `all` functions are also quite handy.
 
-#### Putting it all togehter: subsetting with boolean vectors
+#### Putting it all together: subsetting with boolean vectors
 Suppose we had a data set (matrix), which had one missing value in one row.
 ```{r}
 mymatrix<-matrix(c(NA,1,1,2,3,1,1,2,3,1,1,5),nrow = 4)
@@ -98,22 +95,57 @@ mymatrix
 ```
 
 
-Suppose we want to do an analysis which can't handle data with missing values.
-
-We can create our own little function to use within within apply, which will create a vector that we can use to subset the rows in the matrix.
+Suppose we want to do an analysis which can't handle data with missing values. We can create our own little function to use within within apply, which will create a vector that we can use to subset the rows in the matrix.
 
 ```{r}
 navector<-apply(mymatrix,1,function(x){!any(is.na(x))})
-## English translation of the function: "Not any of these values in this row of mymatrix contain NA values"
+## English translation of the function: "Not any of these values contain NA values"
 navector
 mymatrix[navector,]
 ```
 
 ### Subsetting with names
-Sometimes, your data have names.  These can also be handy handles to use for grabbing portions of data objects.
+Names are also useful tools for subsetting objects. 
 ```{r}
-
+rownames(mymatrix)<-c("rowOne","rowTwo","rowThree","rowFour")
+colnames(mymatrix)<-c("colOne","colTwo","colThree")
+mymatrix[c("rowOne","rowThree"),]
+mymatrix[,c("colTwo","colThree")]
 ```
 ## Data summaries - Part 2 -- Summaries over groups
-### tapply for summaries over groups
-### split/lapply for large problems.
+The `apply` function is just one of a family of functions for data-wrangling in base R. `tapply` and `lapply` are both handy, especially .
+
+### `tapply` for summaries over groups
+`tapply` makes summaries over groups. 
+
+```{r}
+xy<-data.frame(x = 1:10, y = factor(sort(rep(1:2,length.out = 10))))
+xy
+tapply(xy$x,xy$y,mean)
+```
+
+### `split` and `lapply`, or `sflapply` for large problems.
+Sometimes, it is useful to repeat an action over every item in a list.  
+
+For (very) large data frames, it is sometimes helpful to break them up in to pieces for processing, using the `split` function which returns a list object.  Smaller processing-units can be helpful for making more efficient use of your machine's RAM. The process of splitting a large data frame does cost some time, but the efficiency of processing a list can be well worth it, especially if you need to make multiple calculations over the same set of data. 
+
+```{r}
+xy<-data.frame(x = 1:100000000,y = sort(rep(1:100000,length.out = 100000000)))
+dim(xy)
+
+system.time(tapply(xy$x,xy$y,mean))
+
+system.time(xy_list<-split(xy$x,xy$y))
+system.time(lapply(xy_list,mean)) 
+```
+
+When your current problem is large enough that waiting for `lapply` is cumbersome, it is possible to leverage R's capacity for parallel processing to speed things up. There are several R packages to support parallel processing in R (see: https://cran.r-project.org/web/views/HighPerformanceComputing.html for details).
+
+The simplest one for getting started is `snowfall`.  It has a variant of the `lapply` function, called `sfLapply` that sends each item in a list to a separate cluster node.  In this particular example, there aren't many time gains to be had from parallel processing on my machine, but if you process very large data sets, you may find this handy. 
+
+```{r}
+library(snowfall)
+sfInit(cpus = 2)
+system.time(sfLapply(xy_list,mean))
+
+```
