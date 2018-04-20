@@ -1,0 +1,524 @@
+---
+title: "1.0 Basic Navigation, and Data Structures"
+author: "Emilie Henderson and Aaron Cochran"
+date: "February 8, 2018"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    number_sections: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+require(tidyverse) # dependency for document
+```
+
+# Basic R Navigation
+## Getting help.
+
+If you know what function you want, but  don't know how to use it, the help function is helpful.
+
+```{r help1, eval = F}
+help(help)
+```
+
+
+There's also a shortcut, just '?'
+```{r help2, eval = F}
+?help
+```
+
+
+If you don't quite know the name of the function you want, help.search, or just '??' use keywords and fuzzy matching to give you a list of possibilities.
+
+```{r help3, eval = F}
+??help
+```
+
+When you don't know enough to form a request to R's help, just go to Google.  Discussion boards, blogs and help files online are abundant! Stackoverflow is a great resource. 
+
+The folks at CRAN (The Comprehensive R Archive Network) also maintain 'task views' that are useful road-maps to help you figure out what R packages are useful for a particular task, or field.
+
+Because R is constantly under development, new packages come online all the time.  It's well worth checking in.  Task view pages help summarize the ecosystem of packages that have been developed around different themes.
+
+Here is a link to the 'spatial' task view: https://cran.r-project.org/web/views/Spatial.html.
+
+
+## Navigating around the filing system.
+
+You can find your current working directory with `getwd()`.
+
+```{r nav1}
+getwd()
+```
+
+Note: R thinks like Unix.  use "\\\\" or "/", rather than "\\" for filepaths.  Unless you're a native UNIX speaker, this quirk will probably trip you up at some point in time.
+
+You can create new directories from within R.  These will default to sit within your current working directory, unless you specify a full path.
+
+```{r nav2a, eval = "F"}
+dir.create("temp")
+```
+
+You can also set your current working directory to help keep your files organized. 
+
+```{r nav2b, eval = "F"}
+ setwd("temp") 
+```
+
+... and move back up a level when you're done working within the subdirectory.
+```{r nav2c, eval = "F"}
+ setwd("..") 
+```
+
+You can view the objects in your current workspace, the files in your current working directory with `ls`, or the files present in other folders on your computer with `list.files`. 
+
+```{r nav3}
+ls()
+list.files()
+```
+
+
+# Data Structures
+Basic R stores data and information in four major object types: vectors, matrices, data frames and lists.
+
+The R package-set `tidyverse` is "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The textbook by the main author of the packages, Hadley Wickham, is available online here <http://r4ds.had.co.nz/>, or through O'Reilly Publishing in paper form. 
+
+## Base-R
+
+### Vectors
+
+Vectors can old a single number or character, or a sequence of numbers or characters.  They are essentially a 1-dimensional structure for holding information.  All pieces of information within a single vector are of the same data type.  In other words, a single vector will contain either only integers, or all characters.  Numbers that stored in a character vector work like characters.
+
+Vectors are created by using the 'c()' function. 
+
+```{r vec1}
+##### numeric vector creation
+myvector <- c(1,2,3,4,5)
+print(myvector)
+
+##### character vector creation
+myvector<-c("a","b","c","d","e")
+print(myvector)
+```
+
+It is possible to access subsets of a given vector with a numeric index indicating the position of the things you want.  The ':' character can be used to specify a range of values.  You can also use a vector of integers to subset another vector.
+
+```{r vec2}
+#### vector subsetting
+print(myvector[1])
+print(myvector[2])     
+print(myvector[3:5])    
+print(myvector[c(1,3,5)])   
+```
+
+### Matrices
+
+Matrices are a lot like vectors, but in two dimensions.  They contain rows, and columns, and data that are all of one type. 
+
+```{r mat1}
+myvector<-c(1,2,3,4,5,6,7,8,9)
+mymatrix<-matrix(myvector, byrow = T, nrow = 3)
+print(mymatrix)
+```
+
+
+Matrix subsets can also be accessed by providing indices within square brackets, just like vectors, but with two dimensions rather than one (rows come first).
+
+```{r mat2}
+print(mymatrix[1:2,2:3])
+```
+
+
+### Data Frames
+
+Data frames, like matrices, are also 2-dimensional data structures.  Unlike matrices, they can hold data of different types (characters and numbers) in separate columns.
+
+
+```{r dataframe1}
+mydataframe<-data.frame(x=1:9,y = letters[1:9])
+print(mydataframe)
+```
+
+#### minor detour: Factors
+R, by default, stores the character column as a factor ('fctr'). This is a third type of data that we have not yet introduced.  Factors store text, or 'string' data as numbers, which you cannot see when the data are printed to the console. Yes, this is confusing.  It is, however, space efficient for storage.  In order to save space, when R detects text in a data frame, it generates an integer index for each unique text string, and then uses that integer to point to the appropriate text to print.
+
+> In the `tidyverse` packages, some changes have been made to how R determines what is or isn't a factor. Traditionally, you have to specify `stringsAsFactors=FALSE` when reading in data if you want to tell R to treat characters as characters and not as factors. `tidyverse` has changed the default behavior to never read in character vectors as factors, and instead allow the user to determine when something should be a factor by using `as.factor()` or `factor()`. 
+
+
+```{r factor1}
+mydataframe<-data.frame(colors = c("red","red","green","blue"), pets =c("cat","dog","bird","dog"))
+print(mydataframe)
+```
+
+
+Each column in this data frame is stored as a factor, which means that this is really a table full of invisible numbers.
+
+```{r factor2}
+print(as.numeric(mydataframe$colors))
+print(as.numeric(mydataframe$pets))
+```
+
+
+Those numbers point to the 'levels' of the factor variable.
+
+```{r factor3}
+print(levels(mydataframe$colors))
+print(levels(mydataframe$pets))
+```
+
+
+For the 'colors' factor vector, the number three points to the color 'red'.  For the 'pets' factor vector, the number three points to 'dog'.
+
+While there are many good things about factors, odds are good that these invisible numbers will trip you up at least once in your R programming career.  Consider yourself warned.
+
+> It's a good practice to coerce the column of your data.frame to a character vector and then only deal with factors when and if you choose to. Many regression models will convert characters to factors automatically, but ordering of the factors is something you may need to do manually to ensure they are ordered logically. 
+
+```{r factor4}
+# converting from factor to character using as.character()
+class(mydataframe$colors)
+
+mydataframe$colors <- as.character(mydataframe$colors)
+class(mydataframe$colors)
+```
+
+### Lists
+
+Back on the topic of data structure. The third base-R structure for holding data is a 'list' object.  This structure is basically a container structure for holding other things.  The list can contain single data points, vectors, matrices, and data frames together, all in one object.  This can be handy for keeping yourself organized, and also handy if you wish to create a function that returns a bunch of different things.
+
+
+```{r list1}
+mylist<-list(myvector,mymatrix,mydataframe)
+print(mylist)
+```
+
+
+Individual elements within a list can be accessed through double-square brackets.
+
+
+```{r list2}
+print(mylist[[2]])
+```
+
+
+Or, if there are names assigned to the element of the list, they can be accessed through the '$' method, or through the names within double-square brackets.
+
+
+```{r list3}
+names(mylist)<-c("one","two","three")
+mylist$one
+mylist[["two"]]
+```
+
+## `tidyverse`
+
+### `tbl` instead of `data.frame`
+
+`tbl` or "Tibble" is a new type of `data.frame` like object introduced in tidyverse. It operates almost identically to a `data.frame` but with a number of quality-of-life improvements. 
+
+From Hadley Wickham:
+
+> A tibble, or tbl_df, is a modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not. Tibbles are data.frames that are lazy and surly: they do less (i.e. they don't change variable names or types, and don't do partial matching) and complain more (e.g. when a variable does not exist). This forces you to confront problems earlier, typically leading to cleaner, more expressive code. Tibbles also have an enhanced print() method which makes them easier to use with large datasets containing complex objects.
+
+```{r tbl1}
+# as_tibble
+
+library(tidyverse)
+
+data(iris)
+str(iris)
+class(iris)
+
+# convert to a tibble
+as_tibble(iris) %>% str(.)
+```
+
+`tibbles` do less, which is more...
+
+* never converts strings to factors
+* never changes the names of variables
+* only recycles inputs of length 1
+* never creates row.names
+
+# Wrangling Data
+## Base R
+
+Although tidyverse is a wonderful framework for data management, and is important to learn, you will likely encounter code written by dinosaurs, like Emilie, who learned to code in R before the existence of tidyverse.
+
+This segment is aimed at giving you some tools that may come in handy for understanding code written by other people.  This type of coding is also useful for many simple data-management/manipulation problems.
+  
+### Row and Column summaries -- `apply` 
+
+Sometimes, you will want to summarize data over the rows and columns in a matrix, or data frame.  R's 'apply' function is built for this purpose. 
+
+For example, to extract the average of each row in a matrix, you can use the apply function, specifying the first dimension.
+
+```{r apply1}
+mymatrix<-matrix(c(1,1,1,2,2,2,3,4,5),nrow = 3, byrow = T)
+mymatrix
+apply(mymatrix,1,mean)
+```
+
+To extract the average of each column, simply specify the second dimension.
+```{r apply2}
+apply(mymatrix,2,mean)
+```
+
+It is easy to create different summaries by changing out the function specified in the third argument to the function call.
+
+```{r apply3}
+apply(mymatrix,2,sum)
+```
+
+It is also possible to use a function that returns multiple values.
+```{r}
+apply(mymatrix,2,summary)
+```
+
+### Data subsetting
+Sometimes, you will not want to perform a summary over all of your data.  In this case, you can subset objects with vectors.  In the introductory script, we illustrated how to subset a matrix with numbers indicating which rows and columns to choose.
+
+```{r sub1}
+mymatrix[c(1,3),c(1,2)]
+```
+
+We can subset with other types of information as well.  
+
+#### True/False vectors
+
+##### Boolean commands: a quick intro.
+Boolean commands in R are useful for creating true/false vectors to use in subsetting. 
+
+We can use basic boolean notation to apply logical conditions to our vectors. Here are a few simple examples with ==, !=, >, >=, and %in%. 
+```{r bool1}
+x<-1:5
+y<-5:1
+x == y # x equals y
+x != y # x is not equal to y
+x > 2 # x is greater than 2
+x >= y # x is greater than or equal to y
+x %in% y # values in x are contained in y
+```
+
+Boolean statements can be combined to yield a single True/False vector.
+```{r bool2}
+(x >= y) & (x != y) # x is greater than or equal to y AND x is not equal to y
+(x >= y) | (x != y) # x is greater than or equal to y OR x is not equal to y
+```
+
+There are two handy functions that return boolean vectors: `is.na`, and `is.null`.
+
+I use these frequently forfiltering data sets to show only observations with no missing values.
+
+```{r bool3}
+z<-c(NA,1,2,3)
+is.na(z)
+```
+
+```{r bool4}
+p<-NULL
+is.null(p)
+```
+
+The `any`, and `all` functions are also quite handy for exploring and checking data. See their help files for details.
+
+#### Subsetting with boolean vectors
+Suppose we had a data set (matrix), which had one missing value in one row.
+```{r sub2}
+mymatrix<-matrix(c(NA,1,1,2,3,1,1,2,3,1,1,5),nrow = 4)
+mymatrix
+
+```
+
+Suppose we want to do an analysis which can't handle data with missing values. We can create our own little function to use within within apply, which will create a vector that we can use to subset the rows in the matrix.
+
+```{r sub3}
+navector<-apply(mymatrix,1,function(x){!any(is.na(x))})
+## English translation of the function: "Not any of these values contain NA values"
+navector
+mymatrix[navector,]
+```
+
+#### Subsetting with names
+Names are also useful tools for subsetting objects. 
+```{r  sub4}
+rownames(mymatrix)<-c("rowOne","rowTwo","rowThree","rowFour")
+colnames(mymatrix)<-c("colOne","colTwo","colThree")
+mymatrix[c("rowOne","rowThree"),]
+mymatrix[,c("colTwo","colThree")]
+```
+### Summaries over groups -- `tapply` and `lapply`
+The `apply` function is just one of a family of functions for data-wrangling in base R. `tapply` and `lapply` can both be used to summarize data within groupings.
+
+`tapply` uses a vector of data to define the groups. In the example below, the y-variable is a factor with two categories.  We can use it to extract a summary of our x variable over those two categories.
+
+```{r tapply1}
+xy<-data.frame(x = 1:10, y = factor(sort(rep(1:2,length.out = 10))))
+xy
+tapply(xy$x,xy$y,mean)
+```
+
+Sometimes, your data are in lists, rather than vectors, matrices and data frames.  The `lapply` function can be used to repeat an action over every item in a list *(hint: this is a faster alternative to coding loops)*.  
+
+For (very) large data frames, it is sometimes helpful to break them up in to pieces in a list for processing, using the `split` function which returns a list object.  Smaller processing-units can be helpful for making more efficient use of your machine's RAM. The process of splitting a large data frame does cost some time, but the efficiency of processing a list can be well worth it, especially if you need to make multiple calculations over the same set of data. 
+
+```{r lapply1}
+xy<-data.frame(x = 1:1000000,y = sort(rep(1:10000,length.out = 1000000)))
+dim(xy)
+
+system.time(tapply(xy$x,xy$y,mean))
+system.time(xy_list<-split(xy$x,xy$y))
+system.time(lapply(xy_list,mean)) 
+```
+
+When your current problem is large enough that waiting for `lapply` is cumbersome, it is possible to leverage R's capacity for parallel processing to speed things up. There are several R packages to support parallel processing in R (see: https://cran.r-project.org/web/views/HighPerformanceComputing.html for details).
+
+The simplest one for getting started is `snowfall`.  It has a variant of the `lapply` function, called `sfLapply` that sends each item in a list to a separate cluster node.  In this particular example, there aren't many time gains to be had from parallel processing on my machine, but if you process very large data sets, you may find this handy. 
+
+```{r lapply_snowfall}
+library(snowfall)
+sfInit(cpus = 4, parallel = T) # initializes the structure of a cluster using multiple processors
+system.time(sfLapply(xy_list,mean))
+sfStop() # stops the cluster when you're done using it.
+```
+
+## Tidyverse Data Manipulation
+
+This section of the workshop will cover the specific features related to data manipulation using the `tidyverse` collection of packages. It isn't intended to replace Base R but offers a complimentary skillset that is being widely used in the R universe as `tidyverse` has been written over the past few years. 
+
+### The pipeline operator
+
+` %>% ` is known as the pipeline operator. `x %>% f(y)` is functionally equivalent to `f(x,y  )`: `y(x)` serves as the input to `f()`, and `x` is the input for `y()`. It says "take the object on the left side of the pipeline and do the thing on the right side of the pipeline to that object."
+
+### `dplyr` verbs
+
+* `filter` - Keeps data based on filtered criteria.
+* `select` - Selects columns of the data.frame
+* `arrange` - 
+* `mutate` - Create new variables from other columns
+* `summarise` - Aggregate and create summary variables like `mean`, `sd` and counts. 
+* `group_by` - Define groups based on variables, then call `summarise` to aggregate over groups. 
+
+`dplyr` also introduces functions that will be recognizable to anyone working with SQL. 
+
+* `left_join` - return all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.
+* `anti_join` - return all rows from x where there are not matching values in y, keeping just columns from x.
+* `semi_join` - return all rows from x where there are matching values in y, keeping just columns from x.
+
+```{r dplyr1}
+?dplyr::left_join
+```
+
+### In practice
+
+```{r tidyverse1}
+library(nycflights13)
+library(tidyverse)
+data(flights)
+flights
+```
+
+#### `filter` rows
+
+base R method for comparison
+
+```{r tidyverse2, eval=FALSE}
+flights[flights$month==4, ]
+```
+
+
+
+
+```{r tidyverse3}
+flights %>% filter(month  == 4) %>% head(10)# select April flights only, return first 10
+```
+
+```{r tidyverse4}
+flights %>% filter(month == 4 & day == 23) %>% head(10) # combined filter of month and day, return first 10
+```
+
+```{r tidyverse5}
+flights %>% filter(month == 4 & day == 23 | month == 4 & day == 24) # filtering all flights on April 23 or 24th. 
+
+flights %>% filter(month == 4 & day ==23:24) # much less verbose
+
+flights %>% filter(month == 4 & day == c(1, 4, 6) & carrier == "UA" & arr_time <= 913) # use c() when you need to not use sequential numbers
+```
+
+
+#### `select` columns
+
+```{r tidyverse6}
+flights %>% filter(month == 4 & day == 1 & carrier == "UA") %>% select(-year, -month, -day, -carrier) # use - for "not"
+```
+
+#### `arrange` rows
+
+```{r tidyverse7}
+# base R method
+
+flights[order(flights$dep_delay), c("carrier", "dep_delay")]
+```
+
+```{r tidyverse8}
+flights %>%
+  select(carrier, dep_delay) %>%
+  arrange(dep_delay)
+```
+
+#### `mutate`: creating new variables
+
+Let's approximate speed in mph using $speed = \dfrac{dist}{time}$ 
+
+```{r tidyverse9}
+# base R approach
+flights$speed <- flights$distance / flights$air_time*60
+flights[, c("distance", "air_time", "speed")]
+```
+
+
+```{r tidyverse10}
+flights %>%  mutate(speed = distance/air_time*60) %>% select(distance, air_time, speed)
+```
+
+
+#### `summarise` 
+
+> Note: UK or US English spellings are acceptable. 
+
+`summarise` (or `summerize`) 
+
+```{r tidyverse11}
+# summary stats in tidy format
+flights %>% 
+  mutate(speed = distance/air_time*60) %>% 
+  select(distance, air_time, speed) %>% 
+  summarise(avg_speed = mean(speed))
+
+
+# why is there an NA for average speed?  (hint: type mean(c(1, 2, NA))
+flights %>%  
+  mutate(speed = distance/air_time*60) %>% 
+  select(distance, air_time, speed) %>% 
+  summarise(avg_speed = mean(speed, na.rm=TRUE))
+
+```
+
+For functions like `mean` we need to include `na.rm=TRUE` to specify that all missing values (`NA`) are removed before the function calculates the result. 
+
+
+Other aggregate functions:
+
+* `min(x)` - min value of `x`
+* `max(x)` - max value of `x`
+* `mean(x)` - mean value of `x`
+* `median(x)` - median value of `x`
+* `quantile(x, p)` - `p`th quantile of vector `x`
+* `sd(x)` - standard deviation of vector `x`
+* `var(x)` - variance of vector `x`
+* `IQR(x)` - Inter Quartile Range (IQR) of vector `x`
+* `diff(range(x))` - total range of the vector `x`
+

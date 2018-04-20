@@ -1,0 +1,416 @@
+---
+title: "Data visualization"
+author: "Aaron C Cochran & Emilie Henderson"
+date: "April 23, 2018"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    number_sections: true
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(tidyverse)
+library(plotly)
+```
+
+# Data visualization in R and tidyverse
+
+## Base R Plots
+
+While Aaron don't use these typically, it's worth knowing about how base R handles plots. Base R graphics are very useful for rapid data exploration, and are also used within a variety of packages.
+
+### Histograms and boxplots
+
+Histograms are extremely useful for a first glimpse at a data set.
+For a quick and dirty plot, simply send a string of numbers to the function, and let it sort out the details.
+
+```{r hist1}
+data(mtcars)
+hist(mtcars$mpg)
+```
+
+Prettier versions can also be created, specifying the number of categories (breaks). You can also set graphical parameters such as axis labels, and limits (more on these in a moment).
+
+```{r hist2}
+hist(mtcars$hp,
+     breaks = 50,
+     xlab = "Horsepower (hp)", 
+     main = "Histogram of car horsepower, 1974 Motor Trend Car Road Tests",
+     ylim = c(0,10))
+```
+
+#### A brief digression on graphical parameters in base 
+
+Base R has a wide array of graphical paramaters that you can set to tune the appearance of your graphics.  They can be set within plotting function calls.  In the above code, `xlab`, and `ylim` are graphical parameters that are set within the call to the `hist` function. 
+
+Even more of them can also be set with a call to the function 'par'.  See the help files for an exhaustive (and sometimes exhausting) list of base R graphical parameters.
+
+The ones I use most frequently adjust the number of graphing panels in a graphics device (`mfrow`, or `mfcol` set these), the size of the graphing margins (`mar`), text sizes (`cex`), and colors (`col`). For some of these, you can set them to apply to a single element of the graphics (e.g., `cex.axis` affects the font size of the axis labels, and `col.main` affects the color of the main title of the graph).
+
+For multi-panel graphics where you need to fine-tune the layout of the panels within the graphics device, the function `layout` is also useful. 
+
+
+Boxplots can describe a single column of data, multiple columns of data, or a single column of data split in to categories with a function call. 
+
+```{r boxplot1}
+par(mfrow =c(1,3))
+boxplot(mtcars$mpg, 
+        ylab = "Miles Per Gallon",
+        main = "Gas Mileage, All cars")
+boxplot(mtcars[,c("wt","drat")], 
+        ylab = "Value",
+        cex.main = .75,
+        main = "Car features that Emilie is unfamiliar with")
+boxplot(mpg~cyl, ## data to display is described as a function call. In this case, miles per gallon as a function of how many cylinders
+        data = mtcars, 
+        xlab = "Number of cylinders", 
+        ylab = "Miles per gallon",
+        cex.axis = 1.25,
+        cex.main = .8,
+        cex.lab = 1.75,
+        main = "Gas Mileage, by number of cylinders" )
+```
+
+### Barplots
+Barplots are an incredibly useful tool for data display.  For quick and dirty barplots, base R's functionality is great. 
+
+The table function on categorical variables will give you summaries that can be used to feed the 'barplot' function.
+
+The following simple code examples should be enough to get you started with barplots.
+
+```{r barplot1 }
+tab1<-table(mtcars$cyl)
+barplot(tab1, 
+        xlab = "Number of cylinders", 
+        ylab = "Number of car models")
+```
+
+```{r barplot2}
+tab2<-table(mtcars$cyl,mtcars$gear)
+tab2
+```
+
+```{r barplot3}
+barplot(tab2, 
+        xlab = "Number of cylinders", 
+        ylab = "Number of car models",
+        col =c("forestgreen","royalblue","yellow"),
+        Main = "Number of gears",
+        legend = T)
+```
+
+You may have noticed that my barplots lack error bars.  It is possible to add error bars to base R barplots, but it is cumbersome and awkward.  'ggplot2' handles error bars in barplots almost seamlessly. This is incentive enough to learn 'ggplot2' on its own.
+
+There is a good online discussion of this very problem on the web.
+
+https://www.r-bloggers.com/building-barplots-with-error-bars/
+
+#### A brief digression on adding features to existing plots
+So far, we have put only one R graph in each plot.  It is possible to add other features to existing plots with supplemental functions, and also sometimes by setting the graphical parameter 'add' to TRUE within a (second or third) plotting function call. 
+
+
+* 'lines' adds lines to the current plot according to x and y coordinates.
+* 'abline' adds straight lines to the current plot, according to information on slope, and intercept. It can   also be set to a specific y-height, or x-position.
+* 'text' adds annotation to a given plot, at locations specified by x and y coordinates.
+* 'mtext' adds annotation in the margins of a given plot.
+
+Most of these will be illustrated in the following plots.
+
+### Points and linear models
+
+```{r plot1}
+plot(mtcars$mpg ~ mtcars$hp,
+     type = "p",  # point = p, also "o", "l", "b"
+     col = "red", 
+     lwd = 2, # line weight (or point weight)
+     xlab = "MPG",
+     ylab = "HP", 
+     main = "HP vs MPG, 1974 Motor Trend Car Road Tests")
+abline(lm(mpg~hp, data=mtcars), lty = "dashed") # abline(a = intercept, b=slope)
+
+# add in some annotations
+text(x = 250, y=25, labels = "Adj R2 = 0.589\nP=1.788e-7" )
+```
+
+```{r plot2}
+data(iris)
+
+plot(iris$Sepal.Length, iris$Petal.Length,        # x variable, y variable
+     col = iris$Species,                          # colour by species
+     pch = 16,                                    # type of point to use
+     cex = 2,                                     # size of point to use
+     xlab = "Sepal Length",                       # x axis label
+     ylab = "Petal Length",                       # y axis label
+     main = "Flower Characteristics in Iris")     # plot title
+
+legend (x = 4.5, y = 7, legend = levels(iris$Species), col = c(1:3), pch = 16)
+```
+
+### Model diagnostic plots
+
+For many packages, R programmers have written methods to the 'plot' function that interact with the objects that their packages create.  These can be called by the generic function 'plot', or by each method's specific name (e.g., 'plot.lm' for the plot function that interacts with a simple linear regression model object)
+
+'plot.lm' is a useful case to illustrate this functionality.
+
+When running regression models, many researchers use diagnostic plots to confirm their model selection choices. While this is possible to create in `ggplot2` using the `ggfortify` package, base R plotting handles this deftly without additional packages. 
+
+While the resulting display may not something you wish to publish, it is an extremely useful tool for the model building proces. 
+
+```{r plotlm, fig.height = 6, fig.width=6}
+
+fit1 <- lm(Sepal.Length~ Petal.Length, data=iris)
+
+# change layout to 2x2 panel
+par(mfrow = c(2,2)) # change to 2x2
+plot(fit1) # plot fitting diagnostics
+par(mfrow = c(1, 1)) # change back to 1x1
+
+```
+
+
+
+### Saving plots in base R
+There are three basic ways to export graphics files when you are working in RStudio.  
+
+1) You can use the 'Export' button just above the plotting panel in the RStudio interface. This simply saves the current content of the plotting window to a file. This is cumbersome for large numbers of graphics, and doesn't yield high quality images. 
+
+2) If you are working in a Windows operating system, and not using RStudio, the  'savePlot' function is a straightforward way to save graphic images from windows devices in a scripting context.  Since we are working within RStudio, we won't elaborate on this today.
+
+3) Base R's functions opening specific types of graphics devices (`bmp` `jpeg`, `png` and `tiff`) allow for fine-tuned formatting and configuration of output graphics. Graphic construction with this method is a three-step process:
+
+  * First, open up up your device, specifying its' parameters, starting with an output filename.
+  * Second, make your plots in R.
+  * Third, close the device with an empty call to the function `dev.off`.
+
+
+The last method is powerful enough to create publication-quality graphics.  However, it isn't the most straightforward (Aaron thinks `ggplot2` does it better, and Emilie agrees, but learned this method eons ago). 
+
+Here is an example of method 3 to create a '.png' graphics file.
+
+```{r png1}
+png("Sepal vs Petal Length in Iris.png", width = 500, height = 500, res = 72)
+
+plot(iris$Sepal.Length, iris$Petal.Length,
+     col = iris$Species,
+     main = "Sepal vs Petal Length in Iris")
+
+dev.off()
+```
+
+
+### Summary
+
+Base R has a powerful plotting engine, and it is widely used in many existing packages.  However, using it can be convoluted, and it takes an adept user to produce publication quality graphs. 
+
+`ggplot2` is a far more powerful tool to use for data exploration, and for the production of high-quality graphics to illustrate complex data sets.  
+
+
+## `ggplot2`
+
+In the `tidyverse` collection there is a package called `ggplot2`. It provides a "grammar of graphics" approach to plotting, where you create plots layer by layer and arrange the plots as you see fit. 
+
+> Aaron -- Some more explanation in English is probably needed here.  Sadly, I'm not quite the right person to elaborate.  I have taken a stab at it, but it will need your eyes too. 
+
+> Some questions worth answering for this group: 1) Why is there a function call to something called 'aes' inside of the function call to 'ggplot'? 2) What's with the + another function call?
+
+The basic grammatic structure of plotting with ggplot two involves three basic pieces:
+
+1) A basic call to the 'ggplot' function, which specifies things like data to use, and aesthetic mapping (data columns to use, colors, and symbols and other things specified by 'aes').
+
+2) a '+' character to link together all of the pieces of the plot
+
+3) functions that specify the type of geometry to use for plotting portions of the data defined in the basic call to 'ggplot'.  It is possible to use many of these within a single plot (linked with a '+'). Aesthetic mappings may also be specified here.
+
+Here is how those three pieces appear in R:
+
+```{r, eval=FALSE}
+# ggplot(data = MYDATA, aes(X=MY_X, Y=MY_Y, color=MY_COLOR)) +
+  # geom_()  # Many types of geom in ggplot2. 
+
+# If you use the development version, you can even do simple features (spatial)
+
+```
+
+
+```{r ggplot1}
+library(ggplot2)
+library(nycflights13)
+
+data(flights)
+
+ggplot(data = flights, aes(x=month)) +
+  geom_bar()
+
+```
+
+```{r ggplot2}
+# better, cleaned up version
+ggplot(flights, aes(factor(month))) + geom_bar() + ggtitle('NY Flights by Month, 2013') + xlab('Month') + ylab('Count') + theme_minimal() 
+```
+
+### `fill` and `color` 
+
+```{r ggplot3}
+p1 <- ggplot(flights, aes(factor(month))) 
+p1 + geom_bar(aes(fill=carrier))
+
+```
+
+
+```{r ggplot4}
+ggplot(filter(flights, carrier == c('AA', 'DL', 'UA'))) + geom_point(aes(x=dep_delay, y=arr_delay, color=carrier))
+```
+
+### Error bars
+
+```{r ggplot5}
+
+se<-function(x){x<-x[!is.na(x)];sem<-sd(x)/sqrt(length(x))} ## a little function calculating a standard error.
+
+flightsum<-flights %>% group_by(carrier)%>% summarise(delay = mean(dep_delay,na.rm = T),se = se(dep_delay)) 
+ggplot(flightsum, aes(x=carrier, y=delay)) + 
+    geom_col(position=position_dodge()) +
+    geom_errorbar(aes(ymin=delay-se, ymax=delay+se),
+                  width=.2,                    # Width of the error bars
+                  position=position_dodge(.9))
+```
+
+### Using `dplyr` to arrange data before plotting
+
+The `carrier` field in our flights data uses carrier codes to identify each carrier. What if we wanted the actual names for the carriers so we could make a publication-quality plot?
+
+```{r ggplot6}
+data(airlines)
+airlines
+
+data(flights)
+flights
+```
+
+```{r ggplot7}
+flights %>% select(carrier, dep_delay, arr_delay) %>% left_join(airlines, by="carrier") %>% filter(carrier == c("AA","UA", "DL")) %>% 
+  ggplot() + geom_point(aes(x=dep_delay, y=arr_delay, color=name), alpha=.5) +
+  ggtitle('Arrival and departure delays, by Airline') +
+  xlab('Departure delay, minutes') + 
+  ylab('Arrival delay, minutes') +
+  theme_minimal()
+```
+
+### Faceting
+
+```{r ggplot8, fig.width = 8, fig.height = 6}
+flights %>% select(carrier, dep_delay, arr_delay, origin) %>% left_join(airlines, by="carrier") %>% filter(carrier == c("AA","UA", "DL")) %>% 
+  ggplot() + geom_point(aes(x=dep_delay, y=arr_delay, color=name), alpha=.5) +
+  ggtitle('Arrival and departure delays, by Airline') +
+  xlab('Departure delay, minutes') + 
+  ylab('Arrival delay, minutes') +
+  theme_minimal() +
+  facet_wrap(~origin)
+```
+
+### More complex `ggplot2` graphs
+
+
+Let's use `mtcars` which is a collection of stats on various makes and models of car. 
+```{r ggplo9}
+data(mtcars)
+mtcars
+```
+
+Simple plot of `hp` and `mpg`, with the `cyl` (cylinders) color-coded. Smoothing function added.
+```{r ggplot10}
+ggplot(mtcars) + geom_point(aes(hp, mpg, color = factor(cyl))) + # cyl is numeric in this dataset, 
+  # but really is categorical rather than continuous
+  # so we'll coerce it to be a factor with factor(cyl)
+  xlab('Horsepower') +
+  ylab('MPG') +
+  geom_smooth(aes(hp, mpg), method = "loess") +
+  theme_minimal()
+```
+
+Smoothing, but using a grouping variable (`cyl`). 
+
+```{r ggplot11}
+
+ggplot(mtcars, aes(x=hp, y=mpg, color=factor(cyl))) +
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  theme_minimal()
+
+```
+
+
+# Interactive plots
+
+There are a lot of choices here, each with advantages and disadvantages. But for brevity, we're going to just look at Plotly.js, built on D3.js. The reason I choose this one is primarily due to the connection with `ggplot2`, and the fact that the R Library is free and open-source. 
+
+## `ggplotly` 
+
+```{r plotly1, fig.width = 8, fig.height = 8}
+library(plotly)
+p1 <- ggplot(mtcars, aes(x=hp, y=mpg, color=factor(cyl))) +
+  geom_point() + 
+  geom_smooth(method=lm) + theme_minimal()
+
+ggplotly(p1)
+```
+
+## Types of plots
+
+### Sankey diagrams
+
+```{r sankey}
+library(plotly)
+library(rjson)
+
+json_file <- "https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy.json"
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+p <- plot_ly(
+    type = "sankey",
+    domain = c(
+      x =  c(0,1),
+      y =  c(0,1)
+    ),
+    orientation = "h",
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+
+    node = list(
+      label = json_data$data[[1]]$node$label,
+      color = json_data$data[[1]]$node$color,
+      pad = 15,
+      thickness = 15,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = json_data$data[[1]]$link$source,
+      target = json_data$data[[1]]$link$target,
+      value =  json_data$data[[1]]$link$value,
+      label =  json_data$data[[1]]$link$label
+    )
+  ) %>% 
+  layout(
+    title = "Energy forecast for 2050<br>Source: Department of Energy & Climate Change, Tom Counsell via <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock</a>",
+    font = list(
+      size = 10
+    ),
+    height = 850, 
+    width = 800,
+    xaxis = list(showgrid = F, zeroline = F),
+    yaxis = list(showgrid = F, zeroline = F)
+)
+
+p
+
+
+```
+

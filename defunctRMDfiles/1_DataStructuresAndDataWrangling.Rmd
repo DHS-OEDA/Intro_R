@@ -1,5 +1,5 @@
 ---
-title: "1.0 Basic Navigation, and Data Structures"
+title: "1.0 Data Structures And Data Wrangling"
 author: "Emilie Henderson and Aaron Cochran"
 date: "February 8, 2018"
 output: 
@@ -15,72 +15,6 @@ output:
 knitr::opts_chunk$set(cache=TRUE)
 require(tidyverse) # dependency for document
 ```
-
-# Basic R Navigation
-## Getting help.
-
-If you know what function you want, but  don't know how to use it, the help function is helpful.
-
-```{r help1}
-help(help)
-```
-
-
-There's also a shortcut, just '?'
-```{r help2}
-?help
-```
-
-
-If you don't quite know the name of the function you want, help.search, or just '??' use keywords and fuzzy matching to give you a list of possibilities.
-
-```{r help3}
-??help
-```
-
-When you don't know enough to form a request to R's help, just go to Google.  Discussion boards, blogs and help files online are abundant! Stackoverflow is a great resource. 
-
-The folks at CRAN (The Comprehensive R Archive Network) also maintain 'task views' that are useful road-maps to help you figure out what R packages are useful for a particular task, or field.
-
-Because R is constantly under development, new packages come online all the time.  It's well worth checking in.  Task view pages help summarize the ecosystem of packages that have been developed around different themes.
-
-Here is a link to the 'spatial' task view: https://cran.r-project.org/web/views/Spatial.html.
-
-
-## Navigating around the filing system.
-
-You can find your current working directory with `getwd()`.
-
-```{r nav1}
-getwd()
-```
-
-Note: R thinks like Unix.  use "\\\\" or "/", rather than "\\" for filepaths.  Unless you're a native UNIX speaker, this quirk will probably trip you up at some point in time.
-
-You can create new directories from within R.  These will default to sit within your current working directory, unless you specify a full path.
-
-```{r nav2a, eval = "F"}
-dir.create("temp")
-```
-
-You can also set your current working directory to help keep your files organized. 
-
-```{r nav2b, eval = "F"}
- setwd("temp") 
-```
-
-... and move back up a level when you're done working within the subdirectory.
-```{r nav2c, eval = "F"}
- setwd("..") 
-```
-
-You can view the objects in your current workspace, the files in your current working directory with `ls`, or the files present in other folders on your computer with `list.files`. 
-
-```{r nav3}
-ls()
-list.files()
-```
-
 
 # Data Structures
 Basic R stores data and information in four major object types: vectors, matrices, data frames and lists.

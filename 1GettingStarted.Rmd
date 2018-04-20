@@ -1,8 +1,13 @@
 ---
-title: "0_setup"
+title: "Getting Started"
 author: "Aaron C Cochran & Emilie Henderson"
-date: "February 1, 2018"
-output: html_document
+date: "April 23, 2018"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +26,7 @@ Download RStudio Desktop from RStudio. Other editors like Atom, Jupyter Notebook
 
 <https://www.rstudio.com/products/rstudio/download/>
 
-# Install packages
+# Install R packages
 
 The power of R comes through the packages that are written to extend R code. Many pacakges leverage compiled langauges like C++ through the `Rcpp` package, speeding up R immensely. 
 
@@ -59,6 +64,14 @@ And how to change it all to suit your own preferences...
 Help >> Keyboard Shortcuts Help (Alt + Shift + K)
 
 Help >> Cheatsheets >> Pick a cheat sheet
+
+## Other documentation resources
+
+https://cran.r-project.org/doc/contrib/Baggott-refcard-v2.pdf
+
+http://www.u.arizona.edu/~kuchi/Courses/MAT167/Files/R-refcard.pdf
+
+https://cran.r-project.org/other-docs.html
 
 # Working Directory
 

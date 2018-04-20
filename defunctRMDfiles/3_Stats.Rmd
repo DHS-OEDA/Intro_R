@@ -1,5 +1,5 @@
 ---
-title: "3_Stats"
+title: "Statistics"
 author: "Aaron C Cochran & Emilie Henderson"
 date: "February 16, 2018"
 output: 
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 2
     toc_float: true
-    number_sections: true
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
