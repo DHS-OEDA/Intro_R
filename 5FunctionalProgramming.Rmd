@@ -197,7 +197,7 @@ time3
 all(outmat1 == t(outmat3))
 ```
 
-Despite the extra overhead in starting and stopping the cluster, using `snowfall` saved us `r  (time1 - time3)["elapsed"] ` seconds of elapsed time!  Imagine how useful this can be when your looped runs for hours.
+Despite the extra overhead in starting and stopping the cluster, using `snowfall` saved us `r  (time1 - time3)["elapsed"] ` seconds of elapsed time!  Imagine how useful this can be when your looped code runs for hours.
 
 # The tidyverse version of `apply` and friends
 
