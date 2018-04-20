@@ -18,7 +18,7 @@ library(zeligverse)
 
 # Intro
 
-This series of exercises is intended to introduce you to basic statistical operations in R. We'll touch on descriptive statistics, linear models, and get a quick tour of the `zeligverse` collection of packages by Gary King. The `zeligverse` collection is the de facto stats package for social scientists, and aims to improve on some of the base R quirks. 
+This series of exercises is intended to introduce you to basic statistical operations in R. We'll touch on descriptive statistics, linear models, and get a quick tour of the `zeligverse` collection of packages by Gary King. The `zeligverse` collection is the de facto stats package for social scientists, and aims to improve on some of the base R quirks. Where applicable, I'll try to include the base-R equivalent functions so you learn them as well.  
 
 ```{r}
 library(tidyverse)
@@ -27,12 +27,21 @@ library(zeligverse)
 
 # Load data
 
-The `swiss` dataset contains data on fertility and socioeconomic factors in Switzerland’s 47 French-speaking provinces in 1888 (Mosteller and Tukey, 1977, 549-551).
+The `swiss` dataset contains data on fertility and socioeconomic factors in Switzerland’s 47 French-speaking provinces in 1888 (Mosteller and Tukey, 1977, 549-551).  
 
 ```{r}
 data(swiss)
 str(swiss)
 ```
+
+[,1]	 Fertility	Ig, ‘common standardized fertility measure’
+[,2]	 Agriculture	 % of males involved in agriculture as occupation
+[,3]	 Examination	 % draftees receiving highest mark on army examination
+[,4]	 Education	 % education beyond primary school for draftees.
+[,5]	 Catholic	 % ‘catholic’ (as opposed to ‘protestant’).
+[,6]	 Infant.Mortality	 live births who live less than 1 year.
+All variables but ‘Fertility’ give proportions of the population.
+
 
 # Descriptive stats
 
@@ -40,13 +49,27 @@ str(swiss)
 mean(swiss$Fertility)
 sd(swiss$Fertility)
 max(swiss$Fertility)
-
 summary(swiss$Education)
 
 ```
 
+## A slightly better description
+
+`Hmisc` is a large package of useful r functions and contains a better descriptive summary than base R, I think. One thing to note, though, is `Hmisc` and `dplyr` have some conflicting function names (particularly, `summarize`). You want to call the package explicitly to be sure you know what you are calling. For example, `dplyr::summarize` instead of just `summarize`. 
+
+```{r}
+library(Hmisc)
+Hmisc::describe(swiss)
+
+detach("package:Hmisc", unload=TRUE) # unload the package afterward
+```
+
+
+
 
 # Hypothesis testing
+
+Student's t-Test is called with `t.test()` and the mean specified as `mu`. 
 
 ```{r}
 t.test(swiss$Fertility, mu=60)
@@ -94,18 +117,26 @@ We can see that the residual sums of squares for our `fit3` and `fit4` models ar
 
 # Zelig Project
 
+Using the `zeligverse` packages that collectively are referred to as the Zelig Project, we can accomplish much of what is in base R stats with some extra quality of life improvements. From the Zelig Project documentation:
+
+>Zelig adds considerable infrastructure to improve the use of existing methods. It translates hard-to-interpret coefficients into meaningful quantities of interest, along with the uncertainty estimates (generalizing Clarify for Stata); automates graphics and numerical summaries for all models.
+
+>Zelig can also evaluate counterfactuals (via WhatIf); combine multiply imputed data sets to impute missing data and correct for measurement error (via Amelia and other multiple imputation functions); automates bootstrapping for all models; allows for matching for causal inference to reduce model dependence (via MatchIt and cem); and generates replication data files (for Dataverse to satisfy community replication standards).
+
 ![](img/zelig1.png)
 
+This image illustrates all of the models available in the package(s). 
+
 ```{r}
-z5_1 <- zelig(Fertility ~ Education, model = "ls", data = swiss, cite = FALSE)
+z5_1 <- zelig(Fertility ~ Education, model = "ls", data = swiss, cite = FALSE) # cite=FALSE will keep the citation reminder suppressed
 summary(z5_1)
 
 ```
 
-The `-0.86` coefficient suggests there is a large negative effect on Fertility with increasing Education. Let's explore those differences further using `setx()` and `setx1()`. 
+The `-0.86` coefficient suggests there is a large negative effect on Fertility with increasing Education. Let's explore those differences further using `setx()` and `setx1()`. This will allow us to simulate differing proportions of the educated population. 
 
 ```{r}
-# set education to 5% and 15% of the population
+# set education to 5 and 15
 z5_1 <- setx(z5_1, Education = 5) 
 z5_1 <- setx1(z5_1, Education = 15)
 
@@ -142,12 +173,24 @@ z5_2 <- plot(z5_2)
 
 
 ```{r}
-# swiss %>% 
-#     zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = ., 
-#           cite = FALSE) %>%
-#     setx(Agriculture = seq(1, 90, by = 5)) %>%
-#     sim() %>% 
-#     plot()x
+swiss %>%
+    zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = .,
+          cite = FALSE) %>%
+    setx(Agriculture = seq(1, 90, by = 5)) %>%
+    sim() %>%
+    plot()
 ```
 
+You can even get first differences in the same workflow. 
+
+
+```{r, fig.height = 10, fig.width = 8}
+swiss %>% 
+    zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = ., 
+          cite = FALSE) %>%
+    setx(Agriculture = 10) %>%
+    setx1(Agriculture = 90) %>%
+    sim() %>% 
+    plot()
+```
 
