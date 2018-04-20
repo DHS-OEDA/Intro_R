@@ -73,6 +73,12 @@ http://www.u.arizona.edu/~kuchi/Courses/MAT167/Files/R-refcard.pdf
 
 https://cran.r-project.org/other-docs.html
 
+## Task views
+
+For some types of analysis, folks have compiled information on R's package ecosystem into 'Task Views'.  If someone has built a task view for the type of work that you commonly do, it can be a great way of keeping up to speed on shiny new packages that come online at CRAN.
+
+https://cran.r-project.org/web/views/
+
 # Working Directory
 
 R compartmentalizes code in working directories. This allows for paths to files to be relative instead of absolute, which facilitates sharing code between computers. 
