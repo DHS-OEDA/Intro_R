@@ -213,17 +213,20 @@ Base R has a powerful plotting engine, and it is widely used in many existing pa
 
 In the `tidyverse` collection there is a package called `ggplot2`. It provides a "grammar of graphics" approach to plotting, where you create plots layer by layer and arrange the plots as you see fit. 
 
-> Aaron -- Some more explanation in English is probably needed here.  Sadly, I'm not quite the right person to elaborate.  I have taken a stab at it, but it will need your eyes too. 
+> For more information: http://r4ds.had.co.nz/data-visualisation.html
+>> And if you really want the theoretical underpinnings of ggplot2, read this: http://vita.had.co.nz/papers/layered-grammar.pdf
 
-> Some questions worth answering for this group: 1) Why is there a function call to something called 'aes' inside of the function call to 'ggplot'? 2) What's with the + another function call?
 
 The basic grammatic structure of plotting with ggplot two involves three basic pieces:
 
 1) A basic call to the 'ggplot' function, which specifies things like data to use, and aesthetic mapping (data columns to use, colors, and symbols and other things specified by 'aes').
 
-2) a '+' character to link together all of the pieces of the plot
+2) a `+` character to link together all of the pieces of the plot. `ggplot2` predates the rest of the tidyverse by a few years, and came before the introduction of the pipeline operator (` %>% `). This is a major point of confusion among people just learning the `tidyverse`. 
 
 3) functions that specify the type of geometry to use for plotting portions of the data defined in the basic call to 'ggplot'.  It is possible to use many of these within a single plot (linked with a '+'). Aesthetic mappings may also be specified here.
+
+The main thing to understand with `ggplot2` is graphs are built layer-by-layer using `geom_*()` functions that specify what geometry to use. Within each geometry, you can specify values for x, y, what color to fill or outline x and y with, and what groupings to use. Examples of this are in the following code chunks. 
+
 
 Here is how those three pieces appear in R:
 
@@ -231,34 +234,68 @@ Here is how those three pieces appear in R:
 # ggplot(data = MYDATA, aes(X=MY_X, Y=MY_Y, color=MY_COLOR)) +
   # geom_()  # Many types of geom in ggplot2. 
 
-# If you use the development version, you can even do simple features (spatial)
-
 ```
 
 
-```{r ggplot1}
+```{r ggplot1, echo=TRUE}
 library(ggplot2)
 library(nycflights13)
 
 data(flights)
 
-ggplot(data = flights, aes(x=month)) +
+ggplot(data = flights, aes(x=month)) + # call ggplot() to start the plot. 
+  # Specify data, and that x=month. 
   geom_bar()
 
 ```
 
-```{r ggplot2}
-# better, cleaned up version
-ggplot(flights, aes(factor(month))) + geom_bar() + ggtitle('NY Flights by Month, 2013') + xlab('Month') + ylab('Count') + theme_minimal() 
+The `aes()` function is the asthetic mapping of the plot. In this example, aes is called in the first `ggplot()` function and is then applied globally to all geoms below it. If you put `aes(x=month)` in `geom_bar()` such that `geom_bar(aes(x=month))` it will only apply the asthetic mapping to that layer of the graph. You could then choose to add another layer, like `geom_text()` and specify a new value of x to use with that layer. 
+
+```{r ggplot2, echo=TRUE}
+# better, cleaned up version of the graph
+ggplot(flights, aes(factor(month))) +
+  geom_bar() + 
+  ggtitle('NY Flights by Month, 2013') + # ggtitle() is a shortcut function to get a title
+  xlab('Month') + # sets the x-axis label
+  ylab('Count') + # y-axis label
+  theme_minimal()  # applies a theme to ggplot that changes a lot of things.
 ```
+
+
+In this version, I've cleaned up the plot a bit by giving proper labels and titles, and applying a theme (`theme_minimal()`). There are many themes in `ggplot2` and even more in the `ggthemes` package. 
+
+
+#### A bit on themes...
+
+You can also create your own themes and save them. This is incredibly useful if you use branding on your images and want to include common colors, a company/agency logo, or other things on all of your plots. For more information:
+
+http://ggplot2.tidyverse.org/reference/theme.html
+
+And for some fun aimed at fans of the web comic XKCD:
+
+http://xkcd.r-forge.r-project.org/
+
 
 ### `fill` and `color` 
 
+Part of the `aes()` function is the `fill` and `color` arguments. These apply aesthetics to grouping variables. `color` can be thought of as the outline of an object, whereas `fill` is the actual color filling it. You don't want to use `color` on something like a `geom_bar()` plot because it only outlines the bars. It is used more on `geom_point()`, for example. See the following 2 plots for a visual explanation of what I mean. 
+
+
+
 ```{r ggplot3}
 p1 <- ggplot(flights, aes(factor(month))) 
-p1 + geom_bar(aes(fill=carrier))
+p1 + geom_bar(aes(color=carrier))
 
 ```
+
+In this case the `carrier` is still gray-filled but has a unique color outline.
+
+
+```{r ggplot3-b}
+p1 + geom_bar(aes(fill=carrier))
+```
+
+This is more of what we want. The entire bar is filled. 
 
 
 ```{r ggplot4}
@@ -266,6 +303,10 @@ ggplot(filter(flights, carrier == c('AA', 'DL', 'UA'))) + geom_point(aes(x=dep_d
 ```
 
 ### Error bars
+
+How to add error bars in ggplot2 isn't always immediately clear, but knowing how to do it will pay dividends down the road. 
+
+More here: http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)
 
 ```{r ggplot5}
 
@@ -414,3 +455,13 @@ p
 
 ```
 
+
+# Resources
+
+Finally, for more information, check out all of these resources:
+
+* http://www.cookbook-r.com/  - The classic text on graphing in R and ggplot2
+* https://www.r-graph-gallery.com/  - All sorts of r graphs
+* https://plot.ly/ggplot2/  - Plotly.js and ggplot2 interactive visualizations
+* http://jkunst.com/highcharter/  - A wrapper for Highcharts.js (free for personal use)
+* http://r4ds.had.co.nz/data-visualisation.html  - Data viz chapter of R for Data Science 
