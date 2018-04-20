@@ -2,7 +2,12 @@
 title: "Functional Programming"
 author: "Aaron C Cochran"
 date: "March 22, 2018"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 1
+    toc_float: true
+    number_sections: false
 ---
 
 ```{r setup, include=FALSE}
@@ -128,6 +133,8 @@ col_summary(df, mean)
 ```
 This sort of work is so common in R that there is a nice package that does most of it for you. Still, understanding the fundamental code underneath is essential to really understanding how the `purrr` package's `map()` functions work.
 
+# `apply`, and friends
+In the base R data wra
 # `purrr` 
 
 This package enhances R's functional programming toolkit. The example below is a real-world example of what may be used in a workflow where you are testing the predictive power of a linear model across different segments of a dataset. It uses the `map()` function which maps another function across different columns in a `tbl_df` or `data.frame`. 

@@ -2,7 +2,12 @@
 title: "1.0 Basic Navigation, and Data Structures"
 author: "Emilie Henderson and Aaron Cochran"
 date: "February 8, 2018"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: false
 ---
 
 
@@ -71,14 +76,15 @@ list.files("C:/temp")
 ```
 
 
-## Data Structures: Base-R and tidyverse
+# Data Structures
 Basic R stores data and information in four major object types: vectors, matrices, data frames and lists.
 
 The R package-set `tidyverse` is "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The textbook by the main author of the packages, Hadley Wickham, is available online here <http://r4ds.had.co.nz/>, or through O'Reilly Publishing in paper form. 
 
-### Base-R
+## Base-R
 
-#### Vectors
+### Vectors
+
 Vectors can old a single number or character, or a sequence of numbers or characters.  They are essentially a 1-dimensional structure for holding information.  All pieces of information within a single vector are of the same data type.  In other words, a single vector will contain either only integers, or all characters.  Numbers that stored in a character vector work like characters.
 
 Vectors are created by using the 'c()' function. 
@@ -93,7 +99,6 @@ myvector<-c("a","b","c","d","e")
 print(myvector)
 ```
 
-
 It is possible to access subsets of a given vector with a numeric index indicating the position of the things you want.  The ':' character can be used to specify a range of values.  You can also use a vector of integers to subset another vector.
 
 ```{r}
@@ -104,8 +109,7 @@ print(myvector[3:5])
 print(myvector[c(1,3,5)])   
 ```
 
-
-#### Matrices
+### Matrices
 
 Matrices are a lot like vectors, but in two dimensions.  They contain rows, and columns, and data that are all of one type. 
 
@@ -123,7 +127,7 @@ print(mymatrix[1:2,2:3])
 ```
 
 
-#### Data Frames, with a digression to address Factor vectors
+### Data Frames
 
 Data frames, like matrices, are also 2-dimensional data structures.  Unlike matrices, they can hold data of different types (characters and numbers) in separate columns.
 
@@ -133,7 +137,7 @@ mydataframe<-data.frame(x=1:9,y = letters[1:9])
 print(mydataframe)
 ```
 
-
+#### minor detour: Factors
 R, by default, stores the character column as a factor ('fctr'). This is a third type of data that we have not yet introduced.  Factors store text, or 'string' data as numbers, which you cannot see when the data are printed to the console. Yes, this is confusing.  It is, however, space efficient for storage.  In order to save space, when R detects text in a data frame, it generates an integer index for each unique text string, and then uses that integer to point to the appropriate text to print.
 
 > In the `tidyverse` packages, some changes have been made to how R determines what is or isn't a factor. Traditionally, you have to specify `stringsAsFactors=FALSE` when reading in data if you want to tell R to treat characters as characters and not as factors. `tidyverse` has changed the default behavior to never read in character vectors as factors, and instead allow the user to determine when something should be a factor by using `as.factor()` or `factor()`. 
@@ -175,7 +179,7 @@ mydataframe$colors <- as.character(mydataframe$colors)
 class(mydataframe$colors)
 ```
 
-#### Lists
+### Lists
 
 Back on the topic of data structure. The third base-R structure for holding data is a 'list' object.  This structure is basically a container structure for holding other things.  The list can contain single data points, vectors, matrices, and data frames together, all in one object.  This can be handy for keeping yourself organized, and also handy if you wish to create a function that returns a bunch of different things.
 
