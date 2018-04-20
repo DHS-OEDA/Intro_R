@@ -2,7 +2,12 @@
 title: "3_Stats"
 author: "Aaron C Cochran & Emilie Henderson"
 date: "February 16, 2018"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +25,7 @@ library(tidyverse)
 library(zeligverse)
 ```
 
-## Load data
+# Load data
 
 The `swiss` dataset contains data on fertility and socioeconomic factors in Switzerland’s 47 French-speaking provinces in 1888 (Mosteller and Tukey, 1977, 549-551).
 
@@ -29,7 +34,7 @@ data(swiss)
 str(swiss)
 ```
 
-## Descriptive stats
+# Descriptive stats
 
 ```{r}
 mean(swiss$Fertility)
@@ -41,23 +46,53 @@ summary(swiss$Education)
 ```
 
 
-## Hypothesis testing
+# Hypothesis testing
 
 ```{r}
 t.test(swiss$Fertility, mu=60)
 ```
 
 
-## Linear model
-
+# Linear modeling
+Building a linear model in baseR R is fairly straightforward via the `lm` model. 
 ```{r}
 #base R way
-
 fit1 <- lm(Fertility ~ Education, data = swiss)
 summary(fit1)
 ```
 
-## Zelig Project
+R's `plot.lm` method is helpful for evaluating whether the data distributions fit the assumptions inherent to the statistical test.
+
+```{r}
+par(mfrow =c(2,2))
+plot(fit1)
+```
+
+Models can be compared by the `anova` function.
+
+```{r}
+fit2 <- lm(Fertility ~ Education + Catholic, data = swiss)
+anova(fit1,fit2)
+```
+
+Stepwise selection for linear models can be conducted with the `step` function, which chooses a model based on Akaike's Informatin Criteria (AIC).
+
+```{r}
+fit3<-lm(Fertility~.,data = swiss)
+fit4<-step(fit3)
+par(mfrow =c(2,2))
+plot(fit4)
+par(mfrow =c(1,1))
+```
+
+Many models can be compared simultaneously with `anova`.
+```{r}
+anova(fit3,fit4,fit2,fit1)
+```
+We can see that the residual sums of squares for our `fit3` and `fit4` models are very similar, while the first two models that we made do not fit the `Fertility` response variable as closely.  
+
+
+# Zelig Project
 
 ![](img/zelig1.png)
 
@@ -107,12 +142,12 @@ z5_2 <- plot(z5_2)
 
 
 ```{r}
-swiss %>% 
-    zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = ., 
-          cite = FALSE) %>%
-    setx(Agriculture = seq(1, 90, by = 5)) %>%
-    sim() %>% 
-    plot()x
+# swiss %>% 
+#     zelig(Fertility ~ Agriculture + Examination, model = 'ls', data = ., 
+#           cite = FALSE) %>%
+#     setx(Agriculture = seq(1, 90, by = 5)) %>%
+#     sim() %>% 
+#     plot()x
 ```
 
 
