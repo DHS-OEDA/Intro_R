@@ -23,7 +23,7 @@ library(snowfall)
 
 ## Base R Plots
 
-While Aaron don't use these typically, it's worth knowing about how base R handles plots. Base R graphics are very useful for rapid data exploration, and are also used within a variety of packages.
+Base R plots are incredibly useful and give great quick visualizations during your analysis workflow. They are incredibly useful to know how to use, even when you prefer to plot using another plotting package like `ggplot2`. 
 
 ### Histograms and boxplots
 
@@ -221,27 +221,27 @@ In the `tidyverse` collection there is a package called `ggplot2`. It provides a
 
 The basic grammatic structure of plotting with ggplot two involves three basic pieces:
 
-1) A basic call to the 'ggplot' function, which specifies things like data to use, and aesthetic mapping (data columns to use, colors, and symbols and other things specified by 'aes').
+1) A basic call to the 'ggplot' function, which specifies things like data to use, and aesthetic mapping (data columns to use, colors, and symbols and other things specified by '`aes`').
 
 2) a `+` character to link together all of the pieces of the plot. `ggplot2` predates the rest of the tidyverse by a few years, and came before the introduction of the pipeline operator (` %>% `). This is a major point of confusion among people just learning the `tidyverse`. 
 
-3) functions that specify the type of geometry to use for plotting portions of the data defined in the basic call to 'ggplot'.  It is possible to use many of these within a single plot (linked with a '+'). Aesthetic mappings may also be specified here.
+3) functions that specify the type of geometry to use for plotting portions of the data defined in the basic call to `ggplot`.  It is possible to use many of these within a single plot (linked with a '+'). Aesthetic mappings may also be specified here.
 
 The main thing to understand with `ggplot2` is graphs are built layer-by-layer using `geom_*()` functions that specify what geometry to use. Within each geometry, you can specify values for x, y, what color to fill or outline x and y with, and what groupings to use. Examples of this are in the following code chunks. 
 
 
 Here is how those three pieces appear in R:
 
-```{r, eval=FALSE}
-# ggplot(data = MYDATA, aes(X=MY_X, Y=MY_Y, color=MY_COLOR)) +
-  # geom_()  # Many types of geom in ggplot2. 
+```{r, eval=FALSE, echo = TRUE}
+ggplot(data = MYDATA, aes(X=MY_X, Y=MY_Y, color=MY_COLOR)) +
+  geom_()  # Many types of geom in ggplot2.
 
 ```
 
 
 ```{r ggplot1, echo=TRUE}
 library(ggplot2)
-library(nycflights13)
+library(nycflights13) # our dataset
 
 data(flights)
 
@@ -297,8 +297,21 @@ In this case the `carrier` is still gray-filled but has a unique color outline.
 p1 + geom_bar(aes(fill=carrier))
 ```
 
-This is more of what we want. The entire bar is filled. 
+This is more of what we want. The entire bar is filled. But sometimes stacked bars look a little too busy to convey the right information. This is where the customization options in `ggplot2` really help. 
 
+### `position_dodge()`
+
+Maybe we're more interested in looking only at a the summer months when travel picks up, and we care about the number of flights each airline makes during those months. We can subset and display our bar chart differently to highlight what we want to show the audience. 
+
+```{r}
+ggplot(subset(flights, month == c(6,7,8)), aes(x=factor(month))) +geom_bar(aes(fill=carrier), position = position_dodge())
+```
+
+Notice how the `subset()` function was called within the data argument of the call to `ggplot()`. Your original data source remains unchanged, but you only display the subset of the data relevant to your work. 
+
+### Points and dots
+
+In this example, we're plotting arrival and departure delays for flights from the big 3 airlines; Delta (`DL`), United Airlines (`UA`), and American Airlines (`AA`). The `geom_point()` geom is used for scatter plots. 
 
 ```{r ggplot4}
 ggplot(filter(flights, carrier == c('AA', 'DL', 'UA'))) + geom_point(aes(x=dep_delay, y=arr_delay, color=carrier))
@@ -324,7 +337,7 @@ ggplot(flightsum, aes(x=carrier, y=delay)) +
 
 ### Using `dplyr` to arrange data before plotting
 
-The `carrier` field in our flights data uses carrier codes to identify each carrier. What if we wanted the actual names for the carriers so we could make a publication-quality plot?
+The `carrier` field in our flights data uses carrier codes to identify each carrier. What if we wanted the actual names for the carriers so we could make a publication-quality plot? `ggplot2` fits nicely in the workflow of the `tidyverse` packages and allow you to manipulate and join your source data before plotting, and without munging your source data in the process. 
 
 ```{r ggplot6}
 data(airlines)
@@ -364,7 +377,10 @@ data(mtcars)
 mtcars
 ```
 
-Simple plot of `hp` and `mpg`, with the `cyl` (cylinders) color-coded. Smoothing function added.
+Simple plot of `hp` and `mpg`, with the `cyl` (cylinders) color-coded. A lowess regression has been overlayed. 
+
+
+
 ```{r ggplot10}
 ggplot(mtcars) + geom_point(aes(hp, mpg, color = factor(cyl))) + # cyl is numeric in this dataset, 
   # but really is categorical rather than continuous
@@ -375,7 +391,7 @@ ggplot(mtcars) + geom_point(aes(hp, mpg, color = factor(cyl))) + # cyl is numeri
   theme_minimal()
 ```
 
-Smoothing, but using a grouping variable (`cyl`). 
+This is the same smoothing, but using a grouping variable (`cyl`). 
 
 ```{r ggplot11}
 
