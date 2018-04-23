@@ -19,6 +19,17 @@ library(snowfall)
 
 ```
 
+# Resources
+
+
+Finally, for more information, check out all of these resources:
+
+* http://www.cookbook-r.com/  - The classic text on graphing in R and ggplot2
+* https://www.r-graph-gallery.com/  - All sorts of r graphs
+* https://plot.ly/ggplot2/  - Plotly.js and ggplot2 interactive visualizations
+* http://jkunst.com/highcharter/  - A wrapper for Highcharts.js (free for personal use)
+* http://r4ds.had.co.nz/data-visualisation.html  - Data viz chapter of R for Data Science 
+
 # Data visualization in R and tidyverse
 
 ## Base R Plots
@@ -474,12 +485,4 @@ p
 ```
 
 
-# Resources
 
-Finally, for more information, check out all of these resources:
-
-* http://www.cookbook-r.com/  - The classic text on graphing in R and ggplot2
-* https://www.r-graph-gallery.com/  - All sorts of r graphs
-* https://plot.ly/ggplot2/  - Plotly.js and ggplot2 interactive visualizations
-* http://jkunst.com/highcharter/  - A wrapper for Highcharts.js (free for personal use)
-* http://r4ds.had.co.nz/data-visualisation.html  - Data viz chapter of R for Data Science 
