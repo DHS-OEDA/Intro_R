@@ -314,7 +314,7 @@ The simplest one for getting started is `snowfall`.  It has a variant of the `la
 
 ```{r lapply_snowfall}
 library(snowfall)
-sfInit(cpus = 4, parallel = T) # initializes the structure of a cluster using multiple processors
+sfInit(cpus = 2, parallel = T) # initializes the structure of a cluster using multiple processors
 system.time(sfLapply(xy_list,mean))
 sfStop() # stops the cluster when you're done using it.
 ```
